@@ -2,10 +2,16 @@ from datetime import datetime, timezone
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.alert_store import init_db, insert_alert, latest_alerts
-from app.logger import setup_logger
-from app.model_service import ModelService
-from app.schemas import BatchScoreResponse, ScoreResponse, TrafficEvent
+try:
+    from app.alert_store import init_db, insert_alert, latest_alerts
+    from app.logger import setup_logger
+    from app.model_service import ModelService
+    from app.schemas import BatchScoreResponse, ScoreResponse, TrafficEvent
+except ModuleNotFoundError:
+    from backend.app.alert_store import init_db, insert_alert, latest_alerts
+    from backend.app.logger import setup_logger
+    from backend.app.model_service import ModelService
+    from backend.app.schemas import BatchScoreResponse, ScoreResponse, TrafficEvent
 
 
 app = FastAPI(title="IDS ML Scoring API", version="1.0.0")
@@ -83,3 +89,6 @@ def score_batch(events: list[TrafficEvent]) -> BatchScoreResponse:
 @app.get("/alerts")
 def alerts(limit: int = 25) -> dict:
     return {"alerts": latest_alerts(limit=limit)}
+
+
+handler = app

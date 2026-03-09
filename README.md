@@ -63,27 +63,25 @@ Backend API: `http://localhost:8000`
 }
 ```
 
-## GitHub + deployment plan
+## Deploy Full Stack On Vercel
 
-### Push to GitHub
-```bash
-git init
-git add .
-git commit -m "Initial IDS ML dashboard stack"
-git branch -M main
-git remote add origin <your_repo_url>
-git push -u origin main
-```
+This repository is configured to deploy both frontend and FastAPI backend on Vercel:
+- `frontend` is built as static Vite output
+- backend is served from `api/index.py`
+- frontend calls backend through `/api`
 
-### Deploy frontend on Vercel
-1. Import GitHub repo in Vercel.
-2. Set root directory to `frontend`.
-3. Build command: `npm run build`.
-4. Output directory: `dist`.
-5. Add env var `VITE_API_URL=<your_backend_public_url>`.
+### Vercel steps
+1. Import `eshaansharma07/miniproject` into Vercel.
+2. Keep project root at repository root (`/`).
+3. Do not set a custom root directory.
+4. Click deploy.
+5. Open your deployment and test:
+   - `https://<your-domain>/api/health`
+   - dashboard load on `/`
 
-### Deploy backend (recommended)
-Deploy `backend` to Render/Railway/Fly and use that URL in Vercel env var.
+### Notes
+- In Vercel serverless runtime, alerts/log files are stored in `/tmp` (ephemeral).
+- If model artifacts are missing, backend uses a heuristic scorer fallback so the demo remains live.
 
 ## Submission checklist
 - Include screenshots of dashboard + alert feed
