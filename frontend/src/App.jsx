@@ -17,10 +17,13 @@ export default function App() {
 
   useEffect(() => {
     getHealth()
-      .then(setHealth)
-      .catch(() => setHealth({ status: 'offline', model_version: 'none', metrics: {}, fallback_mode: true }));
+      .then((data) => setHealth(normalizeHealth(data)))
+      .catch(() => setHealth(normalizeHealth({ fallback_mode: true, model_version: 'heuristic-v1', metrics: {} })));
     refreshAlerts();
   }, []);
+
+  const statusTone = health.status === 'ok' ? 'safe' : health.status === 'degraded' ? 'warn' : 'danger';
+  const statusLabel = health.status === 'degraded' ? 'demo mode' : health.status;
 
   useEffect(() => {
     if (!streamOn) return undefined;
@@ -113,7 +116,7 @@ export default function App() {
             analyst-ready alerting, and explainable threat reasoning.
           </p>
           <div className="hero-badges">
-            <span className={`status-pill ${health.status === 'ok' ? 'safe' : 'danger'}`}>API {health.status}</span>
+            <span className={`status-pill ${statusTone}`}>API {statusLabel}</span>
             <span className="status-pill neutral">Model {health.model_version}</span>
             <span className={`status-pill ${health.fallback_mode ? 'warn' : 'safe'}`}>
               {health.fallback_mode ? 'Heuristic backup active' : 'Trained model active'}
@@ -132,7 +135,12 @@ export default function App() {
       </header>
 
       <section className="metrics-grid">
-        <MetricCard label="Backend Status" value={health.status} accent={health.status === 'ok' ? 'safe' : 'danger'} />
+        <MetricCard
+          label="Backend Status"
+          value={statusLabel}
+          accent={statusTone}
+          subtext={health.fallback_mode ? 'Frontend fallback scorer is active' : 'Live API connection is active'}
+        />
         <MetricCard label="Model Version" value={health.model_version} accent="neutral" />
         <MetricCard label="Events Scored" value={events.length} accent="info" subtext="Recent in-memory live window" />
         <MetricCard label="Active Alerts" value={alerts.length} accent={alerts.length ? 'danger' : 'safe'} subtext="High and critical cases" />
@@ -227,4 +235,27 @@ export default function App() {
       </section>
     </main>
   );
+}
+
+function normalizeHealth(data) {
+  if (!data) {
+    return { status: 'degraded', model_version: 'heuristic-v1', metrics: {}, fallback_mode: true, threshold: 0.6 };
+  }
+
+  if (data.fallback_mode) {
+    return {
+      ...data,
+      status: 'degraded',
+      model_version: data.model_version || 'heuristic-v1',
+      metrics: data.metrics || {},
+      threshold: data.threshold ?? 0.6
+    };
+  }
+
+  return {
+    ...data,
+    status: data.status || 'ok',
+    model_version: data.model_version || 'trained',
+    metrics: data.metrics || {}
+  };
 }

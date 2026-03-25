@@ -1,0 +1,172 @@
+\documentclass[conference]{IEEEtran}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{cite}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{url}
+\usepackage{xcolor}
+
+\title{An Explainable Machine Learning Framework for Network Intrusion Detection with a Deployable Security Operations Dashboard}
+
+\author{
+\IEEEauthorblockN{
+Eshaan Sharma,
+Kanav Kaul,
+Akshveer Singh Lamba,
+Aditya Singh,
+Krishna Mehra
+}
+\IEEEauthorblockA{
+Department of Computer Science and Engineering (Artificial Intelligence and Machine Learning)\\
+Apex Institute of Technology, Chandigarh University, Mohali, India
+}
+}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Network intrusion detection remains a critical requirement for modern digital infrastructure because conventional manual monitoring cannot scale to large volumes of traffic events. This paper presents a lightweight and explainable intrusion detection framework that combines machine learning based scoring, engineered network traffic features, alert persistence, and a deployable analyst dashboard. The system uses a Logistic Regression classifier with feature scaling, minority class balancing through Synthetic Minority Oversampling Technique (SMOTE), and threshold tuning to classify benign and malicious traffic flows. In addition to probability based intrusion scoring, the framework produces human-readable threat categories, reasons, and analyst dispositions that improve interpretability during demonstrations and early-stage security operations workflows. A React-based frontend offers live traffic simulation, threat visualization, alert feeds, manual packet scoring, and a risk gauge, while a FastAPI backend exposes scoring and health endpoints. Experimental evaluation on a synthetic but intentionally imbalanced dataset shows perfect precision, recall, and F1 score under the controlled data generation setting, demonstrating a correct end-to-end pipeline. The paper also discusses system limitations, especially the use of synthetic data, and identifies practical directions for future work using benchmark intrusion datasets and production-grade storage.
+\end{abstract}
+
+\begin{IEEEkeywords}
+intrusion detection, machine learning, cybersecurity, FastAPI, React, explainable AI, SMOTE, network traffic analysis
+\end{IEEEkeywords}
+
+\section{Introduction}
+The increasing frequency and sophistication of cyberattacks have made intelligent intrusion detection systems essential in academic, enterprise, and cloud environments. Signature-based tools remain useful for known threats, but they are less effective against evolving attack patterns, zero-day behavior, and subtle anomalies in traffic flows. Consequently, data-driven intrusion detection systems that leverage machine learning have received considerable attention. Such systems can recognize behavior patterns from network attributes and improve the speed of attack detection.
+
+Despite growing research interest, many student and prototype systems stop at offline model training and fail to present a complete operational workflow. In practice, analysts need more than a binary prediction. They require a live dashboard, interpretable output, alert persistence, deployment capability, and a mechanism to demonstrate system behavior during evaluation. This work addresses that gap by implementing an end-to-end framework for network intrusion detection that combines a trained classifier, explainable scoring logic, and a deployable Security Operations Center (SOC) style dashboard.
+
+The main contributions of this work are as follows:
+\begin{itemize}
+\item a full-stack intrusion detection workflow consisting of data generation, feature engineering, training, inference, alerting, and visualization;
+\item a lightweight classification pipeline using StandardScaler, Logistic Regression, and SMOTE for class imbalance handling;
+\item explainable output in the form of risk levels, threat categories, analyst reasons, and response dispositions;
+\item a deployment-oriented implementation with a React frontend and FastAPI backend suitable for local demonstration and cloud publication.
+\end{itemize}
+
+\section{Related Work}
+Network intrusion detection has been studied using both signature-driven and anomaly-driven methods. Traditional systems such as Snort focus on rule matching, while anomaly detection systems learn normal traffic behavior and detect deviations. Research in this area increasingly applies machine learning algorithms such as Logistic Regression, Support Vector Machines, Decision Trees, Random Forests, and deep learning models to classify network traffic.
+
+Logistic Regression remains relevant because of its efficiency, low computational cost, and interpretability. Although more complex models often achieve higher performance on benchmark datasets, lightweight classifiers are well suited for serverless deployment and interactive dashboards. In academic projects, class imbalance is a recurring challenge because intrusion traffic usually represents a small proportion of the data. SMOTE and class weighting are frequently used to address this issue. Another important research trend is explainable AI, which seeks to make model decisions understandable for human analysts. The proposed system aligns with this trend by augmenting numerical scores with descriptive analyst-oriented reasoning.
+
+\section{System Architecture}
+The proposed framework follows a layered architecture composed of a machine learning layer, an application programming interface layer, and a frontend presentation layer.
+
+\subsection{Backend Layer}
+The backend is implemented using FastAPI. It provides the following REST endpoints:
+\begin{itemize}
+\item \texttt{/health} for model and runtime status,
+\item \texttt{/score} for single event intrusion scoring,
+\item \texttt{/score/batch} for batch event scoring,
+\item \texttt{/alerts} for retrieving recent high-risk and critical alerts.
+\end{itemize}
+
+When a suspicious event is scored at a high or critical level, the alert is stored in SQLite and exposed to the dashboard. Structured logging is also supported for event tracking.
+
+\subsection{Frontend Layer}
+The frontend is built using React and Vite. It provides a visually rich SOC-inspired interface containing health cards, a threat index gauge, a live scored traffic table, a manual scoring form, an alert feed, and a threat simulation lab. The frontend is designed to support demonstration-driven evaluation and communicate system behavior clearly to non-specialist reviewers.
+
+\subsection{Deployment Layer}
+The project is structured for Vercel deployment. Static frontend files are published for the dashboard, and API routes can be mapped to the backend service. This deployment-oriented design differentiates the work from notebook-only or offline-only approaches and improves project usability for demonstrations.
+
+\section{Methodology}
+
+\subsection{Synthetic Data Generation}
+Because the project is designed as an end-to-end demonstrator, a synthetic dataset is generated to emulate both benign and intrusive traffic. Benign events reflect common web and DNS-like flows, while intrusive samples include suspicious destination ports, failed logins, abnormal transfer ratios, short high-packet sessions, and unusual flags. The intrusion ratio is intentionally low to reflect imbalanced real-world traffic.
+
+\subsection{Feature Engineering}
+Each traffic event is transformed into a 13-dimensional numeric vector. The features used are:
+\begin{enumerate}
+\item source IP numeric encoding,
+\item destination IP numeric encoding,
+\item source port,
+\item destination port,
+\item protocol encoding,
+\item bytes sent,
+\item bytes received,
+\item session duration,
+\item packet count,
+\item failed logins,
+\item unusual flag,
+\item bytes ratio,
+\item packets per second.
+\end{enumerate}
+
+These features combine flow-level statistics with threat indicators that are meaningful in intrusion analysis. For example, a large outbound-to-inbound byte ratio may indicate exfiltration, while repeated failed logins on remote administration ports may suggest brute-force activity.
+
+\subsection{Model Training}
+The classifier is trained using a scikit-learn Pipeline with StandardScaler followed by Logistic Regression with balanced class weighting. To address skewed class distribution, SMOTE is applied to the training split. The model outputs probabilities rather than hard labels. A threshold sweep is then performed to identify the value that maximizes the F1 score on the test data.
+
+\subsection{Explainable Scoring}
+Beyond a single score, the system generates:
+\begin{itemize}
+\item a risk level (low, medium, high, critical),
+\item a threat category such as credential attack, lateral movement, or possible exfiltration,
+\item a disposition such as allow, monitor closely, investigate and contain, or escalate immediately,
+\item a list of reasons derived from suspicious attributes.
+\end{itemize}
+
+This layer improves interpretability and makes the framework more suitable for classroom demonstrations and analyst-style review.
+
+\section{Experimental Results}
+The current trained model metadata produced the following results on the held-out test split:
+
+\begin{table}[!t]
+\caption{Model Evaluation Summary}
+\centering
+\begin{tabular}{lc}
+\toprule
+\textbf{Metric} & \textbf{Value} \\
+\midrule
+Model Version & \texttt{v20260325053743} \\
+Decision Threshold & 0.35 \\
+Precision & 1.0000 \\
+Recall & 1.0000 \\
+F1 Score & 1.0000 \\
+Best F1 During Tuning & 1.0000 \\
+Test Samples & 2400 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The perfect scores indicate that the synthetic data generation scheme creates clearly separable classes under the current feature design. This verifies that the learning and inference pipeline is functioning correctly. However, these results should not be interpreted as proof of real-world generalization. The correct academic interpretation is that the framework demonstrates end-to-end feasibility, while future validation on standard benchmark datasets remains necessary.
+
+\subsection{Discussion of Results}
+The model performs strongly because malicious samples were generated with distinct patterns such as abnormal byte ratios, suspicious ports, failed logins, and unusual protocol indicators. The threshold tuning procedure selected a value lower than the conventional 0.50 default, enabling high recall while preserving perfect precision in this controlled setting. This reflects the importance of explicit threshold selection in security systems, where the balance between missed attacks and false alarms is crucial.
+
+\section{Dashboard and Operational Behavior}
+The dashboard extends the machine learning component into a practical security interface. Live traffic events are scored continuously, and suspicious flows are highlighted in a recent-events table. High and critical detections are added to an alert feed, and the current environment posture is summarized using a threat gauge. Manual event submission allows a reviewer to modify traffic fields and immediately observe changes in score and risk level. Additionally, scenario-based simulations such as SMB lateral movement, remote desktop brute force, and data exfiltration demonstrate how distinct attack patterns are surfaced by the system.
+
+This presentation layer is important because academic evaluators often assess both technical implementation and usability. The proposed dashboard provides a meaningful bridge between back-end model inference and analyst-centric interpretation.
+
+\section{Limitations and Future Work}
+The primary limitation of the present work is the use of synthetic data. Although synthetic traffic is helpful for controlled experiments and reproducible demonstrations, it cannot fully capture the diversity and noise of real enterprise traffic. A second limitation is that the deployed environment may rely on lightweight fallback scoring for reliability depending on the runtime platform. In addition, alert persistence is currently implemented with SQLite, which is sufficient for a prototype but not ideal for distributed production settings.
+
+Future work may include the following extensions:
+\begin{itemize}
+\item training and validating the system on NSL-KDD, UNSW-NB15, or CIC-IDS2017;
+\item comparing Logistic Regression against Random Forest, Gradient Boosting, and neural models;
+\item integrating real packet capture or Zeek/Suricata style logs;
+\item storing alerts in PostgreSQL or another production database;
+\item adding charts for temporal attack trends and case management support.
+\end{itemize}
+
+\section{Conclusion}
+This paper presented an explainable machine learning framework for network intrusion detection that combines training, scoring, alerting, visualization, and deployment into a single system. The use of StandardScaler, Logistic Regression, SMOTE, and threshold tuning enables efficient classification of synthetic benign and malicious traffic. The frontend dashboard improves interpretability by exposing threat categories, reasons, and analyst actions in a SOC-style interface. Experimental results confirm that the designed pipeline operates correctly and efficiently in a controlled setting. The work therefore serves as a strong foundation for future experimentation on benchmark datasets and more production-oriented cybersecurity workflows.
+
+\begin{thebibliography}{00}
+\bibitem{b1} W. Lee and S. J. Stolfo, ``A framework for constructing features and models for intrusion detection systems,'' \emph{ACM Transactions on Information and System Security}, vol. 3, no. 4, pp. 227--261, 2000.
+\bibitem{b2} M. Tavallaee, E. Bagheri, W. Lu, and A. A. Ghorbani, ``A detailed analysis of the KDD CUP 99 data set,'' in \emph{Proc. IEEE Symposium on Computational Intelligence for Security and Defense Applications}, 2009, pp. 1--6.
+\bibitem{b3} I. Chawla, K. W. Bowyer, L. O. Hall, and W. P. Kegelmeyer, ``SMOTE: synthetic minority over-sampling technique,'' \emph{Journal of Artificial Intelligence Research}, vol. 16, pp. 321--357, 2002.
+\bibitem{b4} N. Moustafa and J. Slay, ``UNSW-NB15: A comprehensive data set for network intrusion detection systems,'' in \emph{Proc. Military Communications and Information Systems Conference}, 2015, pp. 1--6.
+\bibitem{b5} I. Sharafaldin, A. H. Lashkari, and A. A. Ghorbani, ``Toward generating a new intrusion detection dataset and intrusion traffic characterization,'' in \emph{Proc. International Conference on Information Systems Security and Privacy}, 2018, pp. 108--116.
+\end{thebibliography}
+
+\end{document}
