@@ -1,13 +1,26 @@
 import sqlite3
 import os
 from pathlib import Path
+import tempfile
 
 
-if os.getenv("VERCEL"):
-    DB_PATH = Path("/tmp/alerts.db")
-else:
-    DB_PATH = Path(__file__).resolve().parents[1] / "data" / "alerts.db"
-DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+def _resolve_db_path() -> Path:
+    preferred = (
+        Path("/tmp/alerts.db")
+        if os.getenv("VERCEL")
+        else Path(__file__).resolve().parents[1] / "data" / "alerts.db"
+    )
+
+    try:
+        preferred.parent.mkdir(parents=True, exist_ok=True)
+        return preferred
+    except OSError:
+        fallback = Path(tempfile.gettempdir()) / "alerts.db"
+        fallback.parent.mkdir(parents=True, exist_ok=True)
+        return fallback
+
+
+DB_PATH = _resolve_db_path()
 
 
 def init_db() -> None:

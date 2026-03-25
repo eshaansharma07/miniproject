@@ -1,0 +1,1284 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+2 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>
+endobj
+4 0 obj
+<< /Type /Pages /Kids [5 0 R 7 0 R 9 0 R 11 0 R 13 0 R 15 0 R 17 0 R] /Count 7 >>
+endobj
+5 0 obj
+<< /Length 3519 >>
+stream
+BT
+/Helvetica-Bold 20 Tf
+1 0 0 1 48 786 Tm
+(Intrusion Detection in Network Traffic Using ML) Tj
+ET
+BT
+/Helvetica-Bold 15 Tf
+1 0 0 1 48 741 Tm
+(Evaluator Guide) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 704 Tm
+(Prepared for project demonstration and viva on 2026-03-25.) Tj
+ET
+BT
+/Helvetica-Bold 15 Tf
+1 0 0 1 48 681 Tm
+(1. Project Summary) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 644 Tm
+(This project is an end-to-end AI and cybersecurity system that detects suspicious network) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 630 Tm
+(traffic and presents the results in a Security Operations Center style dashboard. It) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 616 Tm
+(combines machine learning based scoring, explainable threat analysis, alert storage,) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 602 Tm
+(structured logging, and a frontend that can simulate normal and attack traffic in real time.) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 579 Tm
+(The main goal is to show how AI can be used to classify incoming traffic events as benign or) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 565 Tm
+(malicious and help an analyst understand why the system raised an alert.) Tj
+ET
+BT
+/Helvetica-Bold 15 Tf
+1 0 0 1 48 542 Tm
+(2. Problem Statement) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 505 Tm
+(Modern networks generate a large number of traffic events. Manual inspection is slow and) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 491 Tm
+(error-prone. This project solves that problem by:) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 468 Tm
+(- converting raw traffic details into engineered numeric features) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 454 Tm
+(- applying a trained ML classifier to estimate intrusion probability) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 440 Tm
+(- labeling each event with a risk level) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 426 Tm
+(- generating human-readable reasons and response suggestions) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 412 Tm
+(- showing everything in a live dashboard) Tj
+ET
+BT
+/Helvetica-Bold 15 Tf
+1 0 0 1 48 389 Tm
+(3. Objectives) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 352 Tm
+(- detect suspicious traffic automatically) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 338 Tm
+(- reduce analyst effort with live scoring) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 324 Tm
+(- provide explainable results instead of only a black-box score) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 310 Tm
+(- store important alerts for later inspection) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 296 Tm
+(- make the project deployable on Vercel for easy demonstration) Tj
+ET
+BT
+/Helvetica-Bold 15 Tf
+1 0 0 1 48 273 Tm
+(4. Architecture Overview) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 236 Tm
+(The project has three major parts:) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 213 Tm
+(- Backend API: FastAPI service for health checks, scoring, batch scoring, alerts, and) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 199 Tm
+(logging) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 185 Tm
+(- ML Layer: feature engineering, synthetic data generation, imbalance handling with) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 171 Tm
+(SMOTE, threshold tuning, and model artifact loading) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 157 Tm
+(- Frontend Dashboard: React and Vite based SOC dashboard with live stream, simulation) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 143 Tm
+(lab, manual scoring, metrics, risk gauge, and alert feed) Tj
+ET
+BT
+/Helvetica-Bold 15 Tf
+1 0 0 1 48 120 Tm
+(5. Tech Stack) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 83 Tm
+(- Frontend: React 18, Vite, CSS) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 69 Tm
+(- Backend: FastAPI, Pydantic) Tj
+ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 4 0 R /MediaBox [0 0 595 842] /Resources << /Font << /Helvetica 1 0 R /Helvetica-Bold 2 0 R /Courier 3 0 R >> >> /Contents 4 0 R >>
+endobj
+7 0 obj
+<< /Length 3097 >>
+stream
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 786 Tm
+(- ML: scikit-learn, imbalanced-learn, NumPy, joblib) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 772 Tm
+(- Storage: SQLite for alert persistence) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 758 Tm
+(- Logging: python-json-logger) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 744 Tm
+(- Deployment: Vercel) Tj
+ET
+BT
+/Helvetica-Bold 15 Tf
+1 0 0 1 48 721 Tm
+(6. Machine Learning Model) Tj
+ET
+BT
+/Helvetica-Bold 12 Tf
+1 0 0 1 48 684 Tm
+(Model Used) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 652 Tm
+(The trained model is a Logistic Regression classifier inside a scikit-learn Pipeline:) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 629 Tm
+(- StandardScaler for feature normalization) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 615 Tm
+(- LogisticRegression with class_weight set to balanced) Tj
+ET
+BT
+/Helvetica-Bold 12 Tf
+1 0 0 1 48 592 Tm
+(Why This Model Was Chosen) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 560 Tm
+(- fast to train) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 546 Tm
+(- interpretable compared to heavier models) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 532 Tm
+(- good baseline for classification tasks) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 518 Tm
+(- suitable for deployment in lightweight serverless environments) Tj
+ET
+BT
+/Helvetica-Bold 12 Tf
+1 0 0 1 48 495 Tm
+(Class Imbalance Handling) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 463 Tm
+(Intrusion data is usually imbalanced because malicious events are fewer than benign ones. To) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 449 Tm
+(address that:) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 426 Tm
+(- SMOTE is used to oversample the minority intrusion class during training) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 412 Tm
+(- Logistic Regression uses balanced class weighting) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 389 Tm
+(This improves recall and avoids a model that predicts only normal traffic.) Tj
+ET
+BT
+/Helvetica-Bold 15 Tf
+1 0 0 1 48 366 Tm
+(7. Features Used For Training) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 329 Tm
+(The model is trained on 13 engineered features:) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 306 Tm
+(- src_ip_num) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 292 Tm
+(- dst_ip_num) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 278 Tm
+(- src_port) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 264 Tm
+(- dst_port) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 250 Tm
+(- protocol_num) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 236 Tm
+(- bytes_sent) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 222 Tm
+(- bytes_received) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 208 Tm
+(- duration_ms) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 194 Tm
+(- packets) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 180 Tm
+(- failed_logins) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 166 Tm
+(- unusual_flag) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 152 Tm
+(- bytes_ratio) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 138 Tm
+(- packets_per_sec) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 115 Tm
+(These features capture both traffic size behavior and threat indicators such as repeated) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 101 Tm
+(failed logins, suspicious flags, and abnormal transfer patterns.) Tj
+ET
+BT
+/Helvetica-Bold 15 Tf
+1 0 0 1 48 78 Tm
+(8. Training Process) Tj
+ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 4 0 R /MediaBox [0 0 595 842] /Resources << /Font << /Helvetica 1 0 R /Helvetica-Bold 2 0 R /Courier 3 0 R >> >> /Contents 6 0 R >>
+endobj
+9 0 obj
+<< /Length 3693 >>
+stream
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 777 Tm
+(The training pipeline does the following:) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 754 Tm
+(1. Generates synthetic traffic data for benign and malicious patterns.) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 740 Tm
+(2. Splits the data into train and test sets using stratified sampling.) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 726 Tm
+(3. Applies SMOTE to balance the training data.) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 712 Tm
+(4. Fits a StandardScaler plus Logistic Regression pipeline.) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 698 Tm
+(5. Predicts probabilities on the test set.) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 684 Tm
+(6. Tunes the decision threshold over multiple values.) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 670 Tm
+(7. Saves the trained model and metadata as joblib artifacts.) Tj
+ET
+BT
+/Helvetica-Bold 15 Tf
+1 0 0 1 48 647 Tm
+(9. Exact Trained Results) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 610 Tm
+(The current saved model metadata is:) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 587 Tm
+(- Model version: v20260325053743) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 573 Tm
+(- Decision threshold: 0.35) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 559 Tm
+(- Precision: 1.0000) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 545 Tm
+(- Recall: 1.0000) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 531 Tm
+(- F1 score: 1.0000) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 517 Tm
+(- Best F1 during threshold tuning: 1.0000) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 503 Tm
+(- Test samples: 2400) Tj
+ET
+BT
+/Helvetica-Bold 12 Tf
+1 0 0 1 48 480 Tm
+(Important Evaluation Note) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 448 Tm
+(The metrics are perfect because the current training set is synthetic and intentionally) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 434 Tm
+(structured for demonstration. That is good for showing the complete ML pipeline, but in a) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 420 Tm
+(real-world deployment these results would need validation on a public intrusion dataset such) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 406 Tm
+(as NSL-KDD, CIC-IDS2017, or UNSW-NB15.) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 383 Tm
+(If an evaluator asks why the scores are 100 percent, the honest answer is:) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 360 Tm
+(- the current dataset is synthetic and separable) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 346 Tm
+(- the pipeline is correct and working) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 332 Tm
+(- real production evaluation would require external benchmark data) Tj
+ET
+BT
+/Helvetica-Bold 15 Tf
+1 0 0 1 48 309 Tm
+(10. How Prediction Works) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 272 Tm
+(When a traffic event is sent to the backend:) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 249 Tm
+(1. The API validates the payload using Pydantic.) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 235 Tm
+(2. The event is converted into a numeric feature vector.) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 221 Tm
+(3. The trained model predicts intrusion probability.) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 207 Tm
+(4. The score is compared with the tuned threshold.) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 193 Tm
+(5. A risk level is assigned:) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 170 Tm
+(- low if score is below 0.50) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 156 Tm
+(- medium if score is between 0.50 and 0.75) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 142 Tm
+(- high if score is between 0.75 and 0.90) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 128 Tm
+(- critical if score is above 0.90) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 105 Tm
+(6. The backend also derives:) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 82 Tm
+(- threat category) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 68 Tm
+(- disposition such as Allow, Monitor closely, Investigate and contain, or Escalate) Tj
+ET
+endstream
+endobj
+10 0 obj
+<< /Type /Page /Parent 4 0 R /MediaBox [0 0 595 842] /Resources << /Font << /Helvetica 1 0 R /Helvetica-Bold 2 0 R /Courier 3 0 R >> >> /Contents 8 0 R >>
+endobj
+11 0 obj
+<< /Length 2790 >>
+stream
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 786 Tm
+(immediately) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 772 Tm
+(- human-readable reasons explaining why the event is suspicious) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 749 Tm
+(7. High and critical events are stored in SQLite as alerts.) Tj
+ET
+BT
+/Helvetica-Bold 15 Tf
+1 0 0 1 48 726 Tm
+(11. Threat Categories Explained) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 689 Tm
+(The backend maps suspicious behavior into analyst-friendly labels:) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 666 Tm
+(- Credential attack: repeated failed logins, especially on ports like 22 or 3389) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 652 Tm
+(- Lateral movement: suspicious SMB traffic on port 445) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 638 Tm
+(- Possible exfiltration: very high outbound traffic compared with inbound traffic) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 624 Tm
+(- Protocol anomaly: abnormal flag behavior) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 610 Tm
+(- Suspicious activity: used when the flow is notable but not strongly tied to one attack) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 596 Tm
+(pattern) Tj
+ET
+BT
+/Helvetica-Bold 15 Tf
+1 0 0 1 48 573 Tm
+(12. Core API Endpoints) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 536 Tm
+(- GET /health) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 522 Tm
+(- POST /score) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 508 Tm
+(- POST /score/batch) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 494 Tm
+(- GET /alerts) Tj
+ET
+BT
+/Helvetica-Bold 12 Tf
+1 0 0 1 48 471 Tm
+(Example Output of /score) Tj
+ET
+BT
+/Courier 9 Tf
+1 0 0 1 48 439 Tm
+({) Tj
+ET
+BT
+/Courier 9 Tf
+1 0 0 1 48 416 Tm
+(  "is_intrusion": true,) Tj
+ET
+BT
+/Courier 9 Tf
+1 0 0 1 48 393 Tm
+(  "score": 1.0,) Tj
+ET
+BT
+/Courier 9 Tf
+1 0 0 1 48 370 Tm
+(  "threshold": 0.35,) Tj
+ET
+BT
+/Courier 9 Tf
+1 0 0 1 48 347 Tm
+(  "risk_level": "critical",) Tj
+ET
+BT
+/Courier 9 Tf
+1 0 0 1 48 324 Tm
+(  "threat_category": "Lateral movement",) Tj
+ET
+BT
+/Courier 9 Tf
+1 0 0 1 48 301 Tm
+(  "disposition": "Escalate immediately",) Tj
+ET
+BT
+/Courier 9 Tf
+1 0 0 1 48 278 Tm
+(  "reasons": [) Tj
+ET
+BT
+/Courier 9 Tf
+1 0 0 1 48 255 Tm
+(    "Unexpected protocol flag or suspicious header behavior detected.",) Tj
+ET
+BT
+/Courier 9 Tf
+1 0 0 1 48 232 Tm
+(    "Authentication failures increase attack likelihood.",) Tj
+ET
+BT
+/Courier 9 Tf
+1 0 0 1 48 209 Tm
+(    "Traffic targets a sensitive service commonly abused during intrusion attempts.",) Tj
+ET
+BT
+/Courier 9 Tf
+1 0 0 1 48 186 Tm
+(    "Outbound-heavy transfer pattern may indicate payload delivery or exfiltration.",) Tj
+ET
+BT
+/Courier 9 Tf
+1 0 0 1 48 163 Tm
+(    "Composite model score exceeds the critical-response threshold.") Tj
+ET
+BT
+/Courier 9 Tf
+1 0 0 1 48 140 Tm
+(  ],) Tj
+ET
+BT
+/Courier 9 Tf
+1 0 0 1 48 117 Tm
+(  "model_version": "v20260325053743") Tj
+ET
+BT
+/Courier 9 Tf
+1 0 0 1 48 94 Tm
+(}) Tj
+ET
+endstream
+endobj
+12 0 obj
+<< /Type /Page /Parent 4 0 R /MediaBox [0 0 595 842] /Resources << /Font << /Helvetica 1 0 R /Helvetica-Bold 2 0 R /Courier 3 0 R >> >> /Contents 10 0 R >>
+endobj
+13 0 obj
+<< /Length 3355 >>
+stream
+BT
+/Helvetica-Bold 15 Tf
+1 0 0 1 48 786 Tm
+(13. Frontend Highlights) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 749 Tm
+(The frontend is designed like a mini SOC dashboard:) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 726 Tm
+(- backend and model health cards) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 712 Tm
+(- threat index gauge) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 698 Tm
+(- live scored traffic table) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 684 Tm
+(- alert feed) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 670 Tm
+(- manual packet scoring form) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 656 Tm
+(- stream modes: Normal, Mixed, Attack) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 642 Tm
+(- threat simulation lab for demos) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 628 Tm
+(- model metrics display) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 605 Tm
+(This makes the project presentation stronger because the evaluator can see both the AI logic) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 591 Tm
+(and the user-facing monitoring workflow.) Tj
+ET
+BT
+/Helvetica-Bold 15 Tf
+1 0 0 1 48 568 Tm
+(14. Deployment Story) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 531 Tm
+(The project is Vercel deployable:) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 508 Tm
+(- frontend builds as a Vite static app) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 494 Tm
+(- backend runs through api/index.py using Vercel Python runtime) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 480 Tm
+(- frontend calls backend via /api routes) Tj
+ET
+BT
+/Helvetica-Bold 12 Tf
+1 0 0 1 48 457 Tm
+(Vercel Notes) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 425 Tm
+(- On Vercel, logs and SQLite alerts are stored in /tmp, so they are ephemeral.) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 411 Tm
+(- If model artifacts are not found, the backend automatically falls back to a heuristic) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 397 Tm
+(scorer to keep the demo alive.) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 383 Tm
+(- In this repository, trained artifacts are now included so the deployed version can use) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 369 Tm
+(the trained model.) Tj
+ET
+BT
+/Helvetica-Bold 15 Tf
+1 0 0 1 48 346 Tm
+(15. Strengths of the Project) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 309 Tm
+(- full-stack AI plus web deployment) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 295 Tm
+(- real-time style scoring flow) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 281 Tm
+(- explainable model output) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 267 Tm
+(- persistent alert mechanism) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 253 Tm
+(- clear frontend demonstration value) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 239 Tm
+(- threshold tuning and imbalance handling) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 225 Tm
+(- deployable architecture instead of only notebook-based work) Tj
+ET
+BT
+/Helvetica-Bold 15 Tf
+1 0 0 1 48 202 Tm
+(16. Limitations) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 165 Tm
+(- dataset is synthetic, not from a real benchmark capture) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 151 Tm
+(- current persistence is SQLite and ephemeral on Vercel) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 137 Tm
+(- no user authentication or analyst role management) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 123 Tm
+(- no streaming socket integration from real packet capture yet) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 109 Tm
+(- perfect metrics should not be claimed as real-world generalization) Tj
+ET
+BT
+/Helvetica-Bold 15 Tf
+1 0 0 1 48 86 Tm
+(17. Future Improvements) Tj
+ET
+endstream
+endobj
+14 0 obj
+<< /Type /Page /Parent 4 0 R /MediaBox [0 0 595 842] /Resources << /Font << /Helvetica 1 0 R /Helvetica-Bold 2 0 R /Courier 3 0 R >> >> /Contents 12 0 R >>
+endobj
+15 0 obj
+<< /Length 3499 >>
+stream
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 786 Tm
+(- train on CIC-IDS2017 or NSL-KDD) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 772 Tm
+(- compare Logistic Regression with Random Forest, XGBoost, and Neural Networks) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 758 Tm
+(- connect to real packet capture tools such as Scapy or Zeek logs) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 744 Tm
+(- add user login and case management) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 730 Tm
+(- store alerts in PostgreSQL or MongoDB) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 716 Tm
+(- add attack trend charts and downloadable reports) Tj
+ET
+BT
+/Helvetica-Bold 15 Tf
+1 0 0 1 48 693 Tm
+(18. Questions Evaluators May Ask) Tj
+ET
+BT
+/Helvetica-Bold 12 Tf
+1 0 0 1 48 656 Tm
+(Q1. Which model did you train?) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 624 Tm
+(Logistic Regression inside a Pipeline with StandardScaler. I also used SMOTE and balanced) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 610 Tm
+(class weighting to handle class imbalance.) Tj
+ET
+BT
+/Helvetica-Bold 12 Tf
+1 0 0 1 48 587 Tm
+(Q2. Why did you choose Logistic Regression?) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 555 Tm
+(It is fast, lightweight, interpretable, and deploys easily in a serverless environment. It) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 541 Tm
+(is a strong baseline for binary classification.) Tj
+ET
+BT
+/Helvetica-Bold 12 Tf
+1 0 0 1 48 518 Tm
+(Q3. What is the threshold and why is it 0.35?) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 486 Tm
+(The model outputs probabilities. I tuned the decision threshold over several values and) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 472 Tm
+(selected 0.35 because it gave the best F1 score on the held-out test set of the synthetic) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 458 Tm
+(dataset.) Tj
+ET
+BT
+/Helvetica-Bold 12 Tf
+1 0 0 1 48 435 Tm
+(Q4. Why are the metrics perfect?) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 403 Tm
+(Because the training and test data are synthetic and deliberately structured. That proves) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 389 Tm
+(the pipeline works, but it is not the same as claiming real-world production accuracy.) Tj
+ET
+BT
+/Helvetica-Bold 12 Tf
+1 0 0 1 48 366 Tm
+(Q5. How do you explain a detection?) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 334 Tm
+(The backend adds reasons such as repeated failed logins, suspicious service ports, abnormal) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 320 Tm
+(byte ratio, unusual flags, and high packet rate. It also labels the threat category and) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 306 Tm
+(recommended disposition.) Tj
+ET
+BT
+/Helvetica-Bold 12 Tf
+1 0 0 1 48 283 Tm
+(Q6. What happens if the model file is missing on Vercel?) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 251 Tm
+(The backend enters heuristic fallback mode so the app still scores traffic and remains) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 237 Tm
+(demo-ready.) Tj
+ET
+BT
+/Helvetica-Bold 12 Tf
+1 0 0 1 48 214 Tm
+(Q7. Where are alerts stored?) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 182 Tm
+(Alerts are stored in SQLite locally. On Vercel, the database file is placed in /tmp, so it) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 168 Tm
+(is temporary.) Tj
+ET
+BT
+/Helvetica-Bold 12 Tf
+1 0 0 1 48 145 Tm
+(Q8. What AI part is present in this project?) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 113 Tm
+(The AI part is the machine learning intrusion classifier, feature engineering pipeline,) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 99 Tm
+(threshold tuning, and explanation logic around the prediction workflow.) Tj
+ET
+BT
+/Helvetica-Bold 15 Tf
+1 0 0 1 48 76 Tm
+(19. Short Viva Script) Tj
+ET
+endstream
+endobj
+16 0 obj
+<< /Type /Page /Parent 4 0 R /MediaBox [0 0 595 842] /Resources << /Font << /Helvetica 1 0 R /Helvetica-Bold 2 0 R /Courier 3 0 R >> >> /Contents 14 0 R >>
+endobj
+17 0 obj
+<< /Length 2078 >>
+stream
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 777 Tm
+(You can explain it in this order:) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 754 Tm
+(1. This project detects malicious network traffic using a trained ML classifier.) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 740 Tm
+(2. The backend receives traffic features, converts them into a vector, and predicts) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 726 Tm
+(intrusion probability.) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 712 Tm
+(3. The model used is Logistic Regression with SMOTE and class balancing.) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 698 Tm
+(4. The dashboard shows health, live traffic, alerts, and threat simulations.) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 684 Tm
+(5. Suspicious events are labeled with risk level, category, reasons, and response) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 670 Tm
+(suggestion.) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 656 Tm
+(6. The project is deployable on Vercel as a complete full-stack application.) Tj
+ET
+BT
+/Helvetica-Bold 15 Tf
+1 0 0 1 48 633 Tm
+(20. Suggested Demo Flow) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 596 Tm
+(1. Open the dashboard and show the health and model metrics cards.) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 582 Tm
+(2. Turn on Attack mode in the stream controls.) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 568 Tm
+(3. Open the Threat Simulation Lab and trigger SMB lateral movement.) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 554 Tm
+(4. Show the critical score, risk level, alert feed, and explanation reasons.) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 540 Tm
+(5. Open the manual scoring form and change fields such as failed_logins or dst_port.) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 526 Tm
+(6. Explain how the threshold and risk logic convert the score into a decision.) Tj
+ET
+BT
+/Helvetica-Bold 15 Tf
+1 0 0 1 48 503 Tm
+(21. Final One-Line Conclusion) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 466 Tm
+(This is a complete AI-powered network intrusion detection and monitoring system with) Tj
+ET
+BT
+/Helvetica 10 Tf
+1 0 0 1 48 452 Tm
+(explainable predictions, alert handling, live visualization, and Vercel-ready deployment.) Tj
+ET
+endstream
+endobj
+18 0 obj
+<< /Type /Page /Parent 4 0 R /MediaBox [0 0 595 842] /Resources << /Font << /Helvetica 1 0 R /Helvetica-Bold 2 0 R /Courier 3 0 R >> >> /Contents 16 0 R >>
+endobj
+19 0 obj
+<< /Type /Catalog /Pages 4 0 R >>
+endobj
+xref
+0 20
+0000000000 65535 f 
+0000000009 00000 n 
+0000000079 00000 n 
+0000000154 00000 n 
+0000000222 00000 n 
+0000000319 00000 n 
+0000003890 00000 n 
+0000004060 00000 n 
+0000007209 00000 n 
+0000007379 00000 n 
+0000011124 00000 n 
+0000011295 00000 n 
+0000014138 00000 n 
+0000014310 00000 n 
+0000017718 00000 n 
+0000017890 00000 n 
+0000021442 00000 n 
+0000021614 00000 n 
+0000023745 00000 n 
+0000023917 00000 n 
+trailer
+<< /Size 20 /Root 19 0 R >>
+startxref
+23967
+%%EOF

@@ -29,12 +29,15 @@ export default function EventForm({ onSubmit, loading }) {
 
   return (
     <section className="panel form-panel">
-      <h2>Manual Packet Score</h2>
+      <div className="panel-head">
+        <h2>Manual Packet Score</h2>
+        <span>Custom analyst sandbox</span>
+      </div>
       <form onSubmit={handleSubmit}>
         <div className="form-grid">
           {Object.keys(initialState).map((key) => (
             <label key={key}>
-              {key}
+              {key.replaceAll('_', ' ')}
               <input
                 name={key}
                 value={form[key]}

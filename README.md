@@ -5,6 +5,8 @@ An end-to-end AIML cybersecurity project with:
 - imbalanced learning strategy (SMOTE + class weighting)
 - SOC-focused dashboard with live feed and risk gauge
 - structured logs and persistent alerts
+- explainable threat categories, analyst reasons, and response dispositions
+- one-click attack simulations for demos, viva, and project evaluation
 
 ## Architecture
 - `backend/`: FastAPI service + ML model training + SQLite alert store + JSON logs
@@ -45,6 +47,23 @@ Backend API: `http://localhost:8000`
 - `POST /score/batch`
 - `GET /alerts?limit=25`
 
+### Sample `/score` response
+```json
+{
+  "is_intrusion": true,
+  "score": 0.94,
+  "threshold": 0.35,
+  "risk_level": "critical",
+  "threat_category": "Lateral movement",
+  "disposition": "Escalate immediately",
+  "reasons": [
+    "Unexpected protocol flag or suspicious header behavior detected.",
+    "Traffic targets a sensitive service commonly abused during intrusion attempts."
+  ],
+  "model_version": "v20260325053743"
+}
+```
+
 ## Example `/score` payload
 ```json
 {
@@ -82,6 +101,8 @@ This repository is configured to deploy both frontend and FastAPI backend on Ver
 ### Notes
 - In Vercel serverless runtime, alerts/log files are stored in `/tmp` (ephemeral).
 - If model artifacts are missing, backend uses a heuristic scorer fallback so the demo remains live.
+- `GET /health` exposes training metrics and whether the trained model or fallback scorer is active.
+- The dashboard includes stream modes (`Normal`, `Mixed`, `Attack`) plus a threat simulation lab for live demonstrations.
 
 ## Submission checklist
 - Include screenshots of dashboard + alert feed

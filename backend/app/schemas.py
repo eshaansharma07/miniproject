@@ -1,5 +1,5 @@
 from datetime import datetime
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class TrafficEvent(BaseModel):
@@ -18,14 +18,23 @@ class TrafficEvent(BaseModel):
 
 
 class ScoreResponse(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+
     is_intrusion: bool
     score: float
     threshold: float
     risk_level: str
+    threat_category: str
+    disposition: str
+    reasons: list[str]
     model_version: str
 
 
 class BatchScoreResponse(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+
     total_events: int
     intrusions: int
+    average_score: float
+    risk_distribution: dict[str, int]
     results: list[ScoreResponse]

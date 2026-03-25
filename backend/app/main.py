@@ -42,6 +42,9 @@ def health() -> dict:
         "status": "ok",
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "model_version": model_service.model_version,
+        "fallback_mode": model_service.fallback_mode,
+        "threshold": model_service.threshold,
+        "metrics": model_service.metrics,
     }
 
 
@@ -76,12 +79,19 @@ def score(event: TrafficEvent) -> ScoreResponse:
 
 @app.post("/score/batch", response_model=BatchScoreResponse)
 def score_batch(events: list[TrafficEvent]) -> BatchScoreResponse:
-    scored = [model_service.score_event(item.model_dump()) for item in events]
+    scored = model_service.score_batch([item.model_dump() for item in events])
     intrusion_count = sum(1 for item in scored if item["is_intrusion"])
+    average_score = round(sum(item["score"] for item in scored) / len(scored), 4) if scored else 0.0
+    risk_distribution = {
+        level: sum(1 for item in scored if item["risk_level"] == level)
+        for level in ("low", "medium", "high", "critical")
+    }
 
     return BatchScoreResponse(
         total_events=len(scored),
         intrusions=intrusion_count,
+        average_score=average_score,
+        risk_distribution=risk_distribution,
         results=[ScoreResponse(**item) for item in scored],
     )
 

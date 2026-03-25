@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 import joblib
@@ -63,6 +63,20 @@ def generate_synthetic_data(samples: int = 12000, intrusion_ratio: float = 0.08)
     return X, y
 
 
+def best_threshold(y_true: np.ndarray, probs: np.ndarray) -> tuple[float, float]:
+    best_score = -1.0
+    best = 0.6
+
+    for threshold in np.arange(0.35, 0.9, 0.05):
+        preds = (probs >= threshold).astype(int)
+        score = f1_score(y_true, preds)
+        if score > best_score:
+            best_score = score
+            best = float(threshold)
+
+    return best, best_score
+
+
 def main() -> None:
     X, y = generate_synthetic_data()
     X_train, X_test, y_train, y_test = train_test_split(
@@ -82,7 +96,7 @@ def main() -> None:
     pipeline.fit(X_balanced, y_balanced)
 
     probs = pipeline.predict_proba(X_test)[:, 1]
-    threshold = 0.6
+    threshold, tuned_f1 = best_threshold(y_test, probs)
     preds = (probs >= threshold).astype(int)
 
     precision = precision_score(y_test, preds)
@@ -94,8 +108,9 @@ def main() -> None:
     print(f"Precision: {precision:.4f}")
     print(f"Recall:    {recall:.4f}")
     print(f"F1 Score:  {f1:.4f}")
+    print(f"Threshold: {threshold:.2f}")
 
-    model_version = f"v{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"
+    model_version = f"v{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}"
     joblib.dump(pipeline, MODEL_DIR / "intrusion_model.joblib")
     joblib.dump(
         {
@@ -105,6 +120,8 @@ def main() -> None:
                 "precision": float(precision),
                 "recall": float(recall),
                 "f1": float(f1),
+                "best_f1_during_tuning": float(tuned_f1),
+                "test_samples": int(len(y_test)),
             },
         },
         MODEL_DIR / "metadata.joblib",

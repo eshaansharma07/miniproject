@@ -1,15 +1,28 @@
 import logging
 import os
 from pathlib import Path
+import tempfile
 
 from pythonjsonlogger import jsonlogger
 
 
-if os.getenv("VERCEL"):
-    LOG_DIR = Path("/tmp/ids-logs")
-else:
-    LOG_DIR = Path(__file__).resolve().parents[1] / "logs"
-LOG_DIR.mkdir(parents=True, exist_ok=True)
+def _resolve_log_dir() -> Path:
+    preferred = (
+        Path("/tmp/ids-logs")
+        if os.getenv("VERCEL")
+        else Path(__file__).resolve().parents[1] / "logs"
+    )
+
+    try:
+        preferred.mkdir(parents=True, exist_ok=True)
+        return preferred
+    except OSError:
+        fallback = Path(tempfile.gettempdir()) / "ids-logs"
+        fallback.mkdir(parents=True, exist_ok=True)
+        return fallback
+
+
+LOG_DIR = _resolve_log_dir()
 
 
 def setup_logger(name: str = "ids-service") -> logging.Logger:

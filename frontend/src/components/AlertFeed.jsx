@@ -9,8 +9,14 @@ export default function AlertFeed({ alerts }) {
         {alerts.length === 0 && <p className="empty">No alerts yet.</p>}
         {alerts.map((alert) => (
           <article className="alert-item" key={alert.id}>
-            <p className="alert-time">{new Date(alert.created_at).toLocaleTimeString()}</p>
-            <p>{alert.summary}</p>
+            <div>
+              <p className="alert-time">{new Date(alert.created_at).toLocaleTimeString()}</p>
+              <p className="alert-route">{alert.src_ip} to {alert.dst_ip}</p>
+            </div>
+            <div>
+              <p>{alert.summary}</p>
+              <p className="alert-score">Confidence {(alert.score * 100).toFixed(1)}%</p>
+            </div>
             <p className={`badge ${alert.risk_level}`}>{alert.risk_level}</p>
           </article>
         ))}

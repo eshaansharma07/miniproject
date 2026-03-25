@@ -279,6 +279,3 @@ def score_batch(events: list[TrafficEvent]) -> BatchScoreResponse:
 @app.get("/alerts")
 def alerts(limit: int = 25) -> dict:
     return {"alerts": latest_alerts(limit=limit)}
-
-
-handler = app
