@@ -1,16 +1,17 @@
 :root {
-  --bg: #07111f;
-  --bg-soft: #0d1d33;
-  --card: rgba(9, 20, 37, 0.8);
-  --card-strong: rgba(13, 27, 48, 0.92);
-  --card-border: rgba(114, 147, 188, 0.22);
-  --text: #eaf3ff;
-  --muted: #92a8c6;
-  --accent: #6ae1ff;
-  --accent-2: #58f3b0;
-  --danger: #ff6b7f;
-  --warn: #ffbf69;
-  --shadow: 0 24px 80px rgba(3, 10, 20, 0.45);
+  --bg: #140b06;
+  --bg-soft: #231108;
+  --card: rgba(28, 14, 8, 0.84);
+  --card-strong: rgba(39, 19, 10, 0.94);
+  --card-border: rgba(241, 187, 73, 0.22);
+  --text: #fff3dd;
+  --muted: #d5b994;
+  --accent: #f3c550;
+  --accent-2: #69d487;
+  --danger: #ff6f61;
+  --warn: #ffb347;
+  --gold: #ffdf7a;
+  --shadow: 0 26px 90px rgba(20, 8, 4, 0.48);
 }
 
 * {
@@ -22,9 +23,10 @@ body {
   font-family: 'Space Grotesk', sans-serif;
   color: var(--text);
   background:
-    radial-gradient(circle at top left, rgba(89, 164, 255, 0.22), transparent 32%),
-    radial-gradient(circle at 85% 8%, rgba(88, 243, 176, 0.18), transparent 26%),
-    linear-gradient(180deg, #07111f 0%, #091728 40%, #06101d 100%);
+    radial-gradient(circle at top left, rgba(255, 204, 87, 0.26), transparent 30%),
+    radial-gradient(circle at 84% 10%, rgba(255, 102, 76, 0.22), transparent 24%),
+    radial-gradient(circle at 72% 78%, rgba(105, 212, 135, 0.16), transparent 20%),
+    linear-gradient(180deg, #140b06 0%, #1d0d08 40%, #100905 100%);
   min-height: 100vh;
 }
 
@@ -50,7 +52,7 @@ body {
   inset: auto -8% -35% auto;
   width: 320px;
   height: 320px;
-  background: radial-gradient(circle, rgba(106, 225, 255, 0.2), transparent 65%);
+  background: radial-gradient(circle, rgba(243, 197, 80, 0.22), transparent 65%);
   pointer-events: none;
 }
 
@@ -76,10 +78,10 @@ body {
   display: inline-flex;
   margin: 0 0 14px;
   padding: 8px 12px;
-  border: 1px solid rgba(106, 225, 255, 0.25);
+  border: 1px solid rgba(243, 197, 80, 0.32);
   border-radius: 999px;
-  background: rgba(106, 225, 255, 0.08);
-  color: #b7edff;
+  background: rgba(243, 197, 80, 0.1);
+  color: #ffe8a3;
   font-size: 0.78rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -93,9 +95,9 @@ body {
 }
 
 button {
-  border: 1px solid rgba(106, 225, 255, 0.22);
-  background: linear-gradient(135deg, rgba(16, 58, 82, 0.9), rgba(18, 111, 97, 0.95));
-  color: #edfffb;
+  border: 1px solid rgba(243, 197, 80, 0.3);
+  background: linear-gradient(135deg, rgba(130, 26, 17, 0.96), rgba(198, 140, 37, 0.95));
+  color: #fff4df;
   padding: 11px 16px;
   border-radius: 14px;
   cursor: pointer;
@@ -105,8 +107,8 @@ button {
 
 button:hover {
   transform: translateY(-1px);
-  border-color: rgba(106, 225, 255, 0.55);
-  box-shadow: 0 12px 30px rgba(13, 85, 95, 0.24);
+  border-color: rgba(255, 223, 122, 0.7);
+  box-shadow: 0 14px 36px rgba(120, 42, 12, 0.28);
 }
 
 button:disabled {
@@ -120,7 +122,7 @@ button:disabled {
   gap: 6px;
   border: 1px solid var(--card-border);
   border-radius: 16px;
-  background: rgba(8, 18, 34, 0.62);
+  background: rgba(31, 14, 8, 0.72);
 }
 
 .toggle-group button {
@@ -130,8 +132,8 @@ button:disabled {
 }
 
 .toggle-group button.active {
-  background: rgba(106, 225, 255, 0.16);
-  border-color: rgba(106, 225, 255, 0.24);
+  background: rgba(243, 197, 80, 0.16);
+  border-color: rgba(255, 223, 122, 0.26);
 }
 
 .hero-actions {
@@ -155,23 +157,23 @@ button:disabled {
   border-radius: 999px;
   font-size: 0.8rem;
   border: 1px solid var(--card-border);
-  background: rgba(12, 23, 39, 0.75);
+  background: rgba(33, 16, 9, 0.82);
 }
 
 .status-pill.safe {
-  color: #99ffd1;
+  color: #8df0a8;
 }
 
 .status-pill.warn {
-  color: #ffe19b;
+  color: #ffd879;
 }
 
 .status-pill.danger {
-  color: #ffb3c1;
+  color: #ff9d8b;
 }
 
 .status-pill.neutral {
-  color: #d8e5f8;
+  color: #ffecc2;
 }
 
 .metrics-grid {
@@ -182,7 +184,7 @@ button:disabled {
 }
 
 .metric-card {
-  background: linear-gradient(180deg, rgba(16, 31, 54, 0.88), rgba(10, 20, 37, 0.88));
+  background: linear-gradient(180deg, rgba(44, 22, 12, 0.92), rgba(24, 12, 7, 0.92));
   border: 1px solid var(--card-border);
   border-radius: 20px;
   padding: 16px;
@@ -206,9 +208,9 @@ button:disabled {
   font-size: 0.8rem;
 }
 
-.metric-card.safe h3 { color: #6effc0; }
+.metric-card.safe h3 { color: #8df0a8; }
 .metric-card.danger h3 { color: var(--danger); }
-.metric-card.info h3 { color: #82d9ff; }
+.metric-card.info h3 { color: var(--gold); }
 .metric-card.warn h3 { color: var(--warn); }
 
 .content-grid {
@@ -317,8 +319,8 @@ button:disabled {
 .command-panel article {
   padding: 14px;
   border-radius: 18px;
-  border: 1px solid rgba(106, 225, 255, 0.12);
-  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(243, 197, 80, 0.14);
+  background: rgba(255, 219, 143, 0.03);
 }
 
 .command-panel article p,
@@ -361,10 +363,10 @@ label {
 
 input {
   width: 100%;
-  border: 1px solid #2e3b58;
+  border: 1px solid rgba(241, 187, 73, 0.24);
   border-radius: 12px;
   padding: 10px;
-  background: rgba(8, 16, 30, 0.9);
+  background: rgba(28, 13, 8, 0.9);
   color: var(--text);
 }
 
@@ -381,7 +383,7 @@ table {
 th, td {
   text-align: left;
   padding: 10px 8px;
-  border-bottom: 1px solid #223049;
+  border-bottom: 1px solid rgba(241, 187, 73, 0.12);
 }
 
 .badge {
@@ -393,10 +395,10 @@ th, td {
   letter-spacing: 0.05em;
 }
 
-.badge.low { background: rgba(30, 177, 130, 0.2); color: #8fffce; }
-.badge.medium { background: rgba(164, 168, 48, 0.2); color: #f0f59a; }
-.badge.high { background: rgba(220, 130, 40, 0.2); color: #ffc78d; }
-.badge.critical { background: rgba(241, 85, 117, 0.2); color: #ff98ab; }
+.badge.low { background: rgba(80, 185, 108, 0.2); color: #97f0b1; }
+.badge.medium { background: rgba(214, 170, 62, 0.2); color: #ffe08e; }
+.badge.high { background: rgba(241, 142, 54, 0.2); color: #ffc68d; }
+.badge.critical { background: rgba(255, 93, 73, 0.2); color: #ffae9f; }
 
 .alert-list {
   display: flex;
@@ -407,7 +409,7 @@ th, td {
 }
 
 .alert-item {
-  border: 1px solid #2c3552;
+  border: 1px solid rgba(241, 187, 73, 0.12);
   border-radius: 16px;
   padding: 12px;
   display: grid;
@@ -445,7 +447,7 @@ th, td {
 
 .scenario-card {
   text-align: left;
-  background: linear-gradient(180deg, rgba(13, 28, 48, 0.88), rgba(9, 20, 35, 0.88));
+  background: linear-gradient(180deg, rgba(53, 23, 11, 0.92), rgba(27, 13, 7, 0.92));
   min-height: 180px;
   display: flex;
   flex-direction: column;
@@ -454,8 +456,8 @@ th, td {
 }
 
 .scenario-card.selected {
-  border-color: rgba(106, 225, 255, 0.55);
-  box-shadow: 0 16px 36px rgba(29, 96, 110, 0.24);
+  border-color: rgba(255, 223, 122, 0.7);
+  box-shadow: 0 18px 42px rgba(124, 58, 19, 0.28);
 }
 
 .scenario-card h3,
