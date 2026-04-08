@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   Area,
@@ -17,31 +17,25 @@ import {
   YAxis
 } from 'recharts';
 import { ChevronRight, Moon, Shield, Sun, UserCircle } from 'lucide-react';
+import { generateSyntheticEvent, getAlerts, getHealth, scoreEvent } from './api';
 import ChartCard from './components/ChartCard';
 import LiveThreatFeed from './components/LiveThreatFeed';
 import MetricCard from './components/MetricCard';
 import SectionHeader from './components/SectionHeader';
 import {
   accuracyComparison,
-  attackDistribution,
-  attacksPerDay,
   chartColors,
   chartTheme,
   confusionMatrix,
   footerLinks,
   heroIllustrationNodes,
-  heroStats,
-  liveThreats,
   metricCards,
-  modelMetrics,
   navItems,
   precisionRecall,
   projectFacts,
   reports,
   rocCurve,
   technologyGroups,
-  threatActivity,
-  trafficComparison,
   valueCards
 } from './services/mockDashboardApi';
 
@@ -52,16 +46,70 @@ const fadeUp = {
 
 export default function App() {
   const [lightMode, setLightMode] = useState(false);
+  const [events, setEvents] = useState([]);
+  const [alerts, setAlerts] = useState([]);
+  const [health, setHealth] = useState({ status: 'loading', model_version: '-', metrics: {}, fallback_mode: false });
+
+  useEffect(() => {
+    let active = true;
+
+    async function bootLiveStream() {
+      const [healthPayload, alertsPayload] = await Promise.all([getHealth(), getAlerts(12)]);
+      if (!active) return;
+
+      setHealth(healthPayload);
+      setAlerts(alertsPayload.alerts || []);
+
+      const warmupEvents = await Promise.all(
+        Array.from({ length: 8 }, () => {
+          const payload = generateSyntheticEvent('mixed');
+          return scoreEvent(payload).then((result) => buildScoredEvent(payload, result));
+        })
+      );
+
+      if (active) setEvents(warmupEvents.reverse());
+    }
+
+    bootLiveStream();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    const timer = setInterval(async () => {
+      const payload = generateSyntheticEvent('mixed');
+      const result = await scoreEvent(payload);
+      const event = buildScoredEvent(payload, result);
+
+      setEvents((previous) => [event, ...previous].slice(0, 48));
+
+      if (event.risk_level === 'high' || event.risk_level === 'critical') {
+        const alertsPayload = await getAlerts(12);
+        setAlerts(alertsPayload.alerts || []);
+      }
+    }, 2500);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const liveData = useMemo(() => buildLiveData(events, alerts, health), [alerts, events, health]);
 
   return (
     <main className={lightMode ? 'bg-slate-100 text-slate-950' : 'text-slate-50'}>
       <div className={lightMode ? 'min-h-screen bg-gradient-to-br from-orange-50 via-white to-amber-50' : 'min-h-screen'}>
         <Navbar lightMode={lightMode} onToggleMode={() => setLightMode((value) => !value)} />
-        <Hero />
-        <DashboardMetrics />
-        <ThreatAnalysis />
-        <ModelPerformance />
-        <LiveThreatFeed rows={liveThreats} />
+        <Hero stats={liveData.heroStats} health={health} />
+        <DashboardMetrics metrics={liveData.metricCards} />
+        <ThreatAnalysis
+          attackDistribution={liveData.attackDistribution}
+          attacksPerDay={liveData.attacksPerDay}
+          threatActivity={liveData.threatActivity}
+          trafficComparison={liveData.trafficComparison}
+        />
+        <ModelPerformance metrics={liveData.modelMetrics} health={health} />
+        <LiveThreatFeed rows={liveData.liveThreats} />
         <Reports />
         <WhyItMatters />
         <AboutProject />
@@ -111,7 +159,9 @@ function Navbar({ lightMode, onToggleMode }) {
   );
 }
 
-function Hero() {
+function Hero({ stats, health }) {
+  const apiLabel = health?.fallback_mode ? 'Browser fallback scorer active' : `Live scorer: ${health?.model_version || 'loading'}`;
+
   return (
     <section id="dashboard" className="section-shell grid min-h-[620px] items-center gap-10 pt-12 lg:grid-cols-[1.05fr_0.95fr]">
       <motion.div initial="hidden" animate="visible" variants={fadeUp} transition={{ duration: 0.6 }}>
@@ -122,6 +172,9 @@ function Hero() {
         <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300">
           A machine learning-based intrusion detection system that identifies suspicious network activity,
           classifies attacks in real time, and helps analysts respond faster.
+        </p>
+        <p className="mt-4 inline-flex rounded-full border border-emerald-300/20 bg-emerald-400/10 px-4 py-2 text-sm font-semibold text-emerald-100">
+          {apiLabel}
         </p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <a className="primary-button" href="#dashboard-metrics">
@@ -169,7 +222,7 @@ function Hero() {
           ))}
         </div>
         <div className="relative -mt-12 grid gap-3 sm:grid-cols-3">
-          {heroStats.map((stat) => (
+          {stats.map((stat) => (
             <div key={stat.label} className="glass-card p-4 text-center">
               <p className="text-2xl font-black text-white">{stat.value}</p>
               <p className="mt-1 text-xs font-semibold text-orange-100">{stat.label}</p>
@@ -182,7 +235,7 @@ function Hero() {
   );
 }
 
-function DashboardMetrics() {
+function DashboardMetrics({ metrics }) {
   return (
     <section id="dashboard-metrics" className="section-shell">
       <SectionHeader
@@ -191,7 +244,7 @@ function DashboardMetrics() {
         description="Evaluator-friendly metrics that show what the system monitors, how much traffic is safe, and whether active alerts need attention."
       />
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {metricCards.map((card) => (
+        {metrics.map((card) => (
           <MetricCard key={card.label} {...card} />
         ))}
       </div>
@@ -199,7 +252,7 @@ function DashboardMetrics() {
   );
 }
 
-function ThreatAnalysis() {
+function ThreatAnalysis({ attackDistribution, attacksPerDay, threatActivity, trafficComparison }) {
   return (
     <section id="threat-analysis" className="section-shell">
       <SectionHeader
@@ -257,16 +310,18 @@ function ThreatAnalysis() {
   );
 }
 
-function ModelPerformance() {
+function ModelPerformance({ metrics, health }) {
+  const aucLabel = metrics.find((item) => item.label === 'ROC-AUC')?.value || 'N/A';
+
   return (
     <section id="model-performance" className="section-shell">
       <SectionHeader
         eyebrow="Machine Learning Performance"
         title="Model Quality Without Confusing Jargon"
-        description="The UI explains accuracy, precision, recall, F1 score, ROC-AUC, and class-balance performance in a way evaluators can quickly follow."
+        description={`The UI reads available model metadata from the backend health endpoint. Current scorer mode: ${health?.fallback_mode ? 'heuristic fallback/demo scoring' : 'trained model scoring'}.`}
       />
       <div className="mb-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        {modelMetrics.map((metric) => (
+        {metrics.map((metric) => (
           <div key={metric.label} className="glass-card p-5 text-center">
             <p className="text-sm text-slate-400">{metric.label}</p>
             <p className="mt-2 text-3xl font-black text-white">{metric.value}</p>
@@ -274,7 +329,7 @@ function ModelPerformance() {
         ))}
       </div>
       <div className="grid gap-5 lg:grid-cols-2">
-        <ChartCard title="ROC Curve" subtitle="AUC: 96.1%. Higher curve means stronger separation between safe and malicious traffic.">
+        <ChartCard title="ROC Curve" subtitle={`AUC: ${aucLabel}. Higher curve means stronger separation between safe and malicious traffic.`}>
           <ResponsiveContainer>
             <LineChart data={rocCurve}>
               <CartesianGrid stroke={chartTheme.grid} />
@@ -424,3 +479,152 @@ const tooltipStyle = {
   borderRadius: '16px',
   color: '#f8fafc'
 };
+
+function buildScoredEvent(payload, result) {
+  return {
+    ...payload,
+    ...result,
+    timestamp: payload.timestamp || new Date().toISOString()
+  };
+}
+
+function buildLiveData(events, alerts, health) {
+  const totalEvents = events.length;
+  const suspiciousCount = events.filter((event) => event.is_intrusion).length;
+  const safeCount = Math.max(0, totalEvents - suspiciousCount);
+  const safePercent = totalEvents ? Math.round((safeCount / totalEvents) * 1000) / 10 : 0;
+  const averageScore = totalEvents
+    ? events.reduce((sum, event) => sum + Number(event.score || 0), 0) / totalEvents
+    : 0;
+  const activeAlerts = alerts.length || events.filter((event) => ['high', 'critical'].includes(event.risk_level)).length;
+  const threatLevel = averageScore >= 0.75 ? 'High' : averageScore >= 0.5 ? 'Medium' : averageScore > 0 ? 'Low' : 'Starting';
+  const accuracy = normalizeMetric(health?.metrics?.accuracy, health?.fallback_mode ? null : 0.948);
+  const precision = normalizeMetric(health?.metrics?.precision, health?.fallback_mode ? null : 0.923);
+  const recall = normalizeMetric(health?.metrics?.recall, health?.fallback_mode ? null : 0.917);
+  const f1 = normalizeMetric(health?.metrics?.f1, health?.fallback_mode ? null : 0.92);
+  const rocAuc = normalizeMetric(health?.metrics?.roc_auc, health?.fallback_mode ? null : 0.961);
+
+  return {
+    heroStats: [
+      { label: 'Threats Detected', value: String(suspiciousCount), subtext: 'live scored window' },
+      { label: 'Accuracy', value: accuracy || 'Live', subtext: health?.fallback_mode ? 'fallback mode' : 'model metadata' },
+      { label: 'Live Alerts', value: String(activeAlerts), subtext: 'high-risk queue' }
+    ],
+    metricCards: [
+      { ...metricCards[0], value: totalEvents.toLocaleString('en-IN'), trend: 'live stream' },
+      { ...metricCards[1], value: suspiciousCount.toLocaleString('en-IN'), trend: `${percent(suspiciousCount, totalEvents)} flagged` },
+      { ...metricCards[2], value: `${safePercent.toFixed(1)}%`, trend: `${safeCount} safe` },
+      { ...metricCards[3], value: String(activeAlerts), trend: activeAlerts ? 'needs review' : 'clear' },
+      { ...metricCards[4], value: accuracy || 'Live', trend: health?.fallback_mode ? 'heuristic' : 'trained' },
+      { ...metricCards[5], value: threatLevel, trend: `avg ${(averageScore * 100).toFixed(1)}%` }
+    ],
+    attackDistribution: buildAttackDistribution(events),
+    attacksPerDay: buildAttackBars(events),
+    threatActivity: buildThreatActivity(events),
+    trafficComparison: buildTrafficComparison(events),
+    modelMetrics: [
+      { label: 'Accuracy', value: accuracy || 'N/A' },
+      { label: 'Precision', value: precision || 'N/A' },
+      { label: 'Recall', value: recall || 'N/A' },
+      { label: 'F1 Score', value: f1 || 'N/A' },
+      { label: 'ROC-AUC', value: rocAuc || 'N/A' }
+    ],
+    liveThreats: buildThreatRows(events, alerts)
+  };
+}
+
+function buildAttackDistribution(events) {
+  if (!events.length) return [{ name: 'Waiting for live scores', value: 1 }];
+
+  const counts = events.reduce((acc, event) => {
+    const label = event.is_intrusion ? event.threat_category || 'Suspicious Activity' : 'Normal Traffic';
+    acc[label] = (acc[label] || 0) + 1;
+    return acc;
+  }, {});
+
+  return Object.entries(counts).map(([name, value]) => ({ name, value }));
+}
+
+function buildAttackBars(events) {
+  const groups = groupByClock(events);
+  return groups.map(({ label, items }) => ({
+    day: label,
+    attacks: items.filter((event) => event.is_intrusion).length
+  }));
+}
+
+function buildThreatActivity(events) {
+  return groupByClock(events).map(({ label, items }) => ({
+    time: label,
+    score: items.length
+      ? Math.round((items.reduce((sum, event) => sum + Number(event.score || 0), 0) / items.length) * 100)
+      : 0
+  }));
+}
+
+function buildTrafficComparison(events) {
+  return groupByClock(events).map(({ label, items }) => ({
+    time: label,
+    safe: items.filter((event) => !event.is_intrusion).length,
+    malicious: items.filter((event) => event.is_intrusion).length
+  }));
+}
+
+function buildThreatRows(events, alerts) {
+  const eventRows = events.slice(0, 8).map((event) => ({
+    timestamp: formatTime(event.timestamp),
+    source: event.src_ip,
+    destination: event.dst_ip,
+    type: event.threat_category || (event.is_intrusion ? 'Suspicious Activity' : 'Normal Traffic'),
+    severity: event.risk_level === 'low' ? 'safe' : event.risk_level,
+    status: event.disposition || (event.is_intrusion ? 'Investigating' : 'Allowed')
+  }));
+
+  if (eventRows.length) return eventRows;
+
+  return alerts.slice(0, 5).map((alert) => ({
+    timestamp: formatTime(alert.created_at),
+    source: alert.src_ip,
+    destination: alert.dst_ip,
+    type: alert.summary || 'Suspicious Flow',
+    severity: alert.risk_level === 'low' ? 'safe' : alert.risk_level,
+    status: 'Investigating'
+  }));
+}
+
+function groupByClock(events) {
+  const recent = events.slice(0, 7).reverse();
+  if (!recent.length) {
+    return Array.from({ length: 7 }, (_, index) => ({
+      label: `T-${6 - index}`,
+      items: []
+    }));
+  }
+
+  return recent.map((event) => ({
+    label: new Date(event.timestamp).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+    items: [event]
+  }));
+}
+
+function formatTime(timestamp) {
+  return new Date(timestamp).toLocaleString('en-IN', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  });
+}
+
+function normalizeMetric(value, fallback) {
+  const normalized = value ?? fallback;
+  if (normalized === null || normalized === undefined) return null;
+  return `${(Number(normalized) * 100).toFixed(1)}%`;
+}
+
+function percent(value, total) {
+  if (!total) return '0.0%';
+  return `${((value / total) * 100).toFixed(1)}%`;
+}
