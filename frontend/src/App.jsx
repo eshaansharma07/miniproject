@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
+import { jsPDF } from 'jspdf';
 import {
   Area,
   AreaChart,
@@ -110,7 +111,7 @@ export default function App() {
         />
         <ModelPerformance metrics={liveData.modelMetrics} health={health} />
         <LiveThreatFeed rows={liveData.liveThreats} />
-        <Reports />
+        <Reports liveData={liveData} events={events} health={health} />
         <WhyItMatters />
         <AboutProject />
         <Footer />
@@ -379,13 +380,19 @@ function ModelPerformance({ metrics, health }) {
   );
 }
 
-function Reports() {
+function Reports({ liveData, events, health }) {
+  const reportActions = {
+    'Download PDF Report': () => downloadPdfReport(liveData, events, health),
+    'Download CSV Logs': () => downloadCsvLogs(events),
+    'Download Threat Summary': () => downloadThreatSummary(liveData, events, health)
+  };
+
   return (
     <section id="reports" className="section-shell">
       <SectionHeader
         eyebrow="Reports"
         title="Downloadable Outputs For Evaluation"
-        description="The frontend is structured so these cards can later connect to real PDF, CSV, and threat-summary endpoints."
+        description="These buttons export the current live dashboard data, including scored events, model status, alert counts, and graph summaries."
       />
       <div className="grid gap-5 md:grid-cols-3">
         {reports.map(({ title, description, icon: Icon }) => (
@@ -393,7 +400,9 @@ function Reports() {
             <div className="metric-icon"><Icon size={22} /></div>
             <h3 className="mt-6 text-xl font-bold text-white">{title}</h3>
             <p className="mt-3 text-sm leading-6 text-slate-300">{description}</p>
-            <button className="secondary-button mt-6 w-full" type="button">Download</button>
+            <button className="secondary-button mt-6 w-full" type="button" onClick={reportActions[title]}>
+              Download
+            </button>
           </article>
         ))}
       </div>
@@ -627,4 +636,149 @@ function normalizeMetric(value, fallback) {
 function percent(value, total) {
   if (!total) return '0.0%';
   return `${((value / total) * 100).toFixed(1)}%`;
+}
+
+function downloadPdfReport(liveData, events, health) {
+  const doc = new jsPDF();
+  const generatedAt = new Date().toLocaleString('en-IN');
+  const rows = [
+    ['Project', 'Sentinel NetShield'],
+    ['Objective', 'Intrusion Detection in Network Traffic using ML'],
+    ['Generated', generatedAt],
+    ['Scorer', health?.fallback_mode ? 'Heuristic fallback scorer' : `Trained model: ${health?.model_version || 'active'}`],
+    ['Total Events', liveData.metricCards[0]?.value || '0'],
+    ['Suspicious Activities', liveData.metricCards[1]?.value || '0'],
+    ['Safe Traffic', liveData.metricCards[2]?.value || '0%'],
+    ['Active Alerts', liveData.metricCards[3]?.value || '0'],
+    ['Threat Level', liveData.metricCards[5]?.value || 'Starting']
+  ];
+
+  doc.setFillColor(15, 23, 42);
+  doc.rect(0, 0, 210, 34, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(20);
+  doc.text('Sentinel NetShield Report', 14, 18);
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+  doc.text('AI-Powered Intrusion Detection Dashboard', 14, 26);
+
+  doc.setTextColor(30, 41, 59);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(13);
+  doc.text('Live Dashboard Snapshot', 14, 48);
+
+  let y = 58;
+  rows.forEach(([label, value]) => {
+    doc.setFont('helvetica', 'bold');
+    doc.text(`${label}:`, 14, y);
+    doc.setFont('helvetica', 'normal');
+    doc.text(String(value), 66, y);
+    y += 8;
+  });
+
+  y += 4;
+  doc.setFont('helvetica', 'bold');
+  doc.text('Model Metrics', 14, y);
+  y += 8;
+  liveData.modelMetrics.forEach((metric) => {
+    doc.setFont('helvetica', 'normal');
+    doc.text(`${metric.label}: ${metric.value}`, 18, y);
+    y += 7;
+  });
+
+  y += 4;
+  doc.setFont('helvetica', 'bold');
+  doc.text('Latest Scored Events', 14, y);
+  y += 8;
+  doc.setFont('helvetica', 'normal');
+  events.slice(0, 8).forEach((event, index) => {
+    const line = `${index + 1}. ${event.src_ip} -> ${event.dst_ip} | ${event.threat_category || 'Normal Traffic'} | ${event.risk_level} | score ${(Number(event.score || 0) * 100).toFixed(1)}%`;
+    doc.text(doc.splitTextToSize(line, 180), 18, y);
+    y += 8;
+  });
+
+  y += 4;
+  doc.setFont('helvetica', 'bold');
+  doc.text('Graph Data Summary', 14, y);
+  y += 8;
+  doc.setFont('helvetica', 'normal');
+  liveData.attackDistribution.forEach((item) => {
+    doc.text(`${item.name}: ${item.value}`, 18, y);
+    y += 7;
+  });
+
+  doc.save('sentinel-netshield-report.pdf');
+}
+
+function downloadCsvLogs(events) {
+  const headers = [
+    'timestamp',
+    'source_ip',
+    'destination_ip',
+    'source_port',
+    'destination_port',
+    'protocol',
+    'threat_category',
+    'risk_level',
+    'score',
+    'disposition'
+  ];
+  const rows = events.map((event) => [
+    event.timestamp,
+    event.src_ip,
+    event.dst_ip,
+    event.src_port,
+    event.dst_port,
+    event.protocol,
+    event.threat_category || 'Normal Traffic',
+    event.risk_level,
+    event.score,
+    event.disposition
+  ]);
+
+  const csv = [headers, ...rows]
+    .map((row) => row.map((cell) => `"${String(cell ?? '').replaceAll('"', '""')}"`).join(','))
+    .join('\n');
+
+  downloadBlob('sentinel-netshield-live-logs.csv', csv, 'text/csv;charset=utf-8');
+}
+
+function downloadThreatSummary(liveData, events, health) {
+  const summary = {
+    project: 'Sentinel NetShield',
+    generated_at: new Date().toISOString(),
+    scorer: health?.fallback_mode ? 'heuristic fallback scorer' : health?.model_version,
+    metrics: liveData.metricCards.map(({ label, value, trend }) => ({ label, value, trend })),
+    model_metrics: liveData.modelMetrics,
+    attack_distribution: liveData.attackDistribution,
+    graph_series: {
+      attacks_per_interval: liveData.attacksPerDay,
+      threat_activity: liveData.threatActivity,
+      safe_vs_malicious: liveData.trafficComparison
+    },
+    latest_events: events.slice(0, 12).map((event) => ({
+      timestamp: event.timestamp,
+      source_ip: event.src_ip,
+      destination_ip: event.dst_ip,
+      threat_category: event.threat_category,
+      risk_level: event.risk_level,
+      score: event.score,
+      disposition: event.disposition
+    }))
+  };
+
+  downloadBlob('sentinel-netshield-threat-summary.json', JSON.stringify(summary, null, 2), 'application/json;charset=utf-8');
+}
+
+function downloadBlob(filename, content, type) {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
 }
