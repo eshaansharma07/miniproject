@@ -113,6 +113,16 @@ export const confusionMatrix = [
   { label: 'True Positive', value: 1179, tone: 'from-emerald-400/35 to-orange-400/10' }
 ];
 
+export const shapFeatureImportance = [
+  { feature: 'Packets per second', importance: 0.34, explanation: 'Fast packet bursts often indicate scans, DDoS attempts, or lateral movement.' },
+  { feature: 'Failed logins', importance: 0.29, explanation: 'Repeated failed authentication attempts strongly support brute-force detection.' },
+  { feature: 'Bytes ratio', importance: 0.25, explanation: 'Outbound-heavy traffic can indicate payload delivery or data exfiltration.' },
+  { feature: 'Destination port', importance: 0.21, explanation: 'Ports such as 22, 445, and 3389 are commonly abused in intrusions.' },
+  { feature: 'Unusual flag', importance: 0.18, explanation: 'Suspicious protocol/header flags increase the anomaly score.' },
+  { feature: 'Duration', importance: 0.12, explanation: 'Very short high-volume sessions can signal aggressive probing.' },
+  { feature: 'Bytes sent', importance: 0.1, explanation: 'Large outbound transfers add risk when combined with other indicators.' }
+];
+
 export const modelMetrics = [
   { label: 'Accuracy', value: '94.8%' },
   { label: 'Precision', value: '92.3%' },

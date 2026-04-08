@@ -36,6 +36,7 @@ import {
   projectFacts,
   reports,
   rocCurve,
+  shapFeatureImportance,
   technologyGroups,
   valueCards
 } from './services/mockDashboardApi';
@@ -363,6 +364,17 @@ function ModelPerformance({ metrics, health }) {
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
+        <ChartCard title="SHAP Feature Importance" subtitle="Global explanation view: higher bars show which traffic features most influence intrusion decisions.">
+          <ResponsiveContainer>
+            <BarChart data={shapFeatureImportance} layout="vertical" margin={{ left: 32 }}>
+              <CartesianGrid stroke={chartTheme.grid} horizontal={false} />
+              <XAxis type="number" stroke={chartTheme.text} />
+              <YAxis type="category" dataKey="feature" width={140} stroke={chartTheme.text} />
+              <Tooltip contentStyle={tooltipStyle} formatter={(value) => [`${Number(value).toFixed(2)}`, 'Mean |SHAP value|']} />
+              <Bar dataKey="importance" fill={chartTheme.amber} radius={[0, 12, 12, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </ChartCard>
         <article className="glass-card p-5">
           <h3 className="text-lg font-bold text-white">Confusion Matrix Heatmap</h3>
           <p className="mt-1 text-sm text-slate-400">Clear view of correct classifications and errors.</p>
@@ -371,6 +383,22 @@ function ModelPerformance({ metrics, health }) {
               <div key={cell.label} className={`rounded-3xl border border-white/10 bg-gradient-to-br ${cell.tone} p-6 text-center`}>
                 <p className="text-3xl font-black text-white">{cell.value}</p>
                 <p className="mt-2 text-sm text-slate-200">{cell.label}</p>
+              </div>
+            ))}
+          </div>
+        </article>
+        <article className="glass-card p-5">
+          <h3 className="text-lg font-bold text-white">How To Explain SHAP</h3>
+          <p className="mt-2 text-sm leading-6 text-slate-300">
+            SHAP helps explain the model by showing which input features pushed predictions toward suspicious or safe.
+            In this dashboard, packet rate, failed logins, byte ratio, sensitive destination ports, and unusual flags
+            are the strongest global indicators for intrusion detection.
+          </p>
+          <div className="mt-5 space-y-3">
+            {shapFeatureImportance.slice(0, 4).map((item) => (
+              <div key={item.feature} className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                <p className="text-sm font-bold text-orange-100">{item.feature}</p>
+                <p className="mt-1 text-xs leading-5 text-slate-400">{item.explanation}</p>
               </div>
             ))}
           </div>
@@ -708,6 +736,20 @@ function downloadPdfReport(liveData, events, health) {
     y += 7;
   });
 
+  if (y > 250) {
+    doc.addPage();
+    y = 20;
+  }
+  y += 4;
+  doc.setFont('helvetica', 'bold');
+  doc.text('SHAP Feature Importance', 14, y);
+  y += 8;
+  doc.setFont('helvetica', 'normal');
+  shapFeatureImportance.forEach((item) => {
+    doc.text(`${item.feature}: ${item.importance.toFixed(2)} mean |SHAP value|`, 18, y);
+    y += 7;
+  });
+
   doc.save('sentinel-netshield-report.pdf');
 }
 
@@ -757,6 +799,7 @@ function downloadThreatSummary(liveData, events, health) {
       threat_activity: liveData.threatActivity,
       safe_vs_malicious: liveData.trafficComparison
     },
+    shap_feature_importance: shapFeatureImportance,
     latest_events: events.slice(0, 12).map((event) => ({
       timestamp: event.timestamp,
       source_ip: event.src_ip,

@@ -16,6 +16,7 @@ export {
   projectFacts,
   reports,
   rocCurve,
+  shapFeatureImportance,
   technologyGroups,
   threatActivity,
   trafficComparison,
