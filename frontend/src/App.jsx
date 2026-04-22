@@ -17,7 +17,22 @@ import {
   XAxis,
   YAxis
 } from 'recharts';
-import { ChevronRight, Moon, Shield, Sun, UserCircle } from 'lucide-react';
+import {
+  ArrowRight,
+  BadgeInfo,
+  BellRing,
+  Binary,
+  BookOpenText,
+  BrainCircuit,
+  CheckCircle2,
+  ChevronRight,
+  Cpu,
+  Gauge,
+  Radar,
+  Shield,
+  Sparkles,
+  Workflow
+} from 'lucide-react';
 import { generateSyntheticEvent, getAlerts, getHealth, scoreEvent } from './api';
 import ChartCard from './components/ChartCard';
 import LiveThreatFeed from './components/LiveThreatFeed';
@@ -26,14 +41,11 @@ import SectionHeader from './components/SectionHeader';
 import {
   accuracyComparison,
   chartColors,
-  chartTheme,
   confusionMatrix,
   footerLinks,
-  heroIllustrationNodes,
   metricCards,
   navItems,
   precisionRecall,
-  projectFacts,
   reports,
   rocCurve,
   shapFeatureImportance,
@@ -42,12 +54,58 @@ import {
 } from './services/mockDashboardApi';
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
+  hidden: { opacity: 0, y: 22 },
   visible: { opacity: 1, y: 0 }
 };
 
+const evaluatorHighlights = [
+  {
+    icon: Shield,
+    title: 'Project Purpose',
+    value: 'Intrusion Detection in Network Traffic using ML',
+    detail: 'Detect suspicious flows, classify probable attack behavior, and present decisions in an evaluator-friendly dashboard.'
+  },
+  {
+    icon: Cpu,
+    title: 'Tech Stack',
+    value: 'React, Recharts, Framer Motion, Python, Scikit-learn',
+    detail: 'Frontend visualization is separated from the scoring API so the evaluator can inspect both system clarity and model performance.'
+  },
+  {
+    icon: Binary,
+    title: 'Student ID',
+    value: '24BAI70387',
+    detail: 'Pinned directly in the hero card for presentation and viva visibility.'
+  }
+];
+
+const systemStages = [
+  {
+    title: 'Capture',
+    subtitle: 'Network attributes are normalized into a compact event schema.',
+    logic: 'Logic: Source IP, destination IP, bytes, packets, duration, failed logins, and flags are assembled into each scoring payload.'
+  },
+  {
+    title: 'Score',
+    subtitle: 'A classifier or heuristic fallback assigns intrusion probability.',
+    logic: 'Logic: The scoring module produces a confidence score, threat label, response disposition, and human-readable reasons.'
+  },
+  {
+    title: 'Explain',
+    subtitle: 'Metrics, SHAP-style importance, and confusion matrix simplify model interpretation.',
+    logic: 'Logic: Evaluator-facing views show why the model is reliable, not just what it predicts.'
+  }
+];
+
+const tooltipStyle = {
+  background: 'rgba(255,255,255,0.92)',
+  border: '1px solid rgba(148, 163, 184, 0.22)',
+  borderRadius: '18px',
+  color: '#0f172a',
+  boxShadow: '0 24px 80px rgba(59, 130, 246, 0.16)'
+};
+
 export default function App() {
-  const [lightMode, setLightMode] = useState(false);
   const [events, setEvents] = useState([]);
   const [alerts, setAlerts] = useState([]);
   const [health, setHealth] = useState({ status: 'loading', model_version: '-', metrics: {}, fallback_mode: false });
@@ -99,138 +157,157 @@ export default function App() {
   const liveData = useMemo(() => buildLiveData(events, alerts, health), [alerts, events, health]);
 
   return (
-    <main className={lightMode ? 'bg-slate-100 text-slate-950' : 'text-slate-50'}>
-      <div className={lightMode ? 'min-h-screen bg-gradient-to-br from-orange-50 via-white to-amber-50' : 'min-h-screen'}>
-        <Navbar lightMode={lightMode} onToggleMode={() => setLightMode((value) => !value)} />
-        <Hero stats={liveData.heroStats} health={health} />
-        <DashboardMetrics metrics={liveData.metricCards} />
-        <ThreatAnalysis
-          attackDistribution={liveData.attackDistribution}
-          attacksPerDay={liveData.attacksPerDay}
-          threatActivity={liveData.threatActivity}
-          trafficComparison={liveData.trafficComparison}
-        />
-        <ModelPerformance metrics={liveData.modelMetrics} health={health} />
-        <LiveThreatFeed rows={liveData.liveThreats} />
-        <Reports liveData={liveData} events={events} health={health} />
-        <WhyItMatters />
-        <AboutProject />
-        <Footer />
-      </div>
+    <main className="app-shell">
+      <div className="page-glow page-glow-left" />
+      <div className="page-glow page-glow-right" />
+      <Navbar />
+      <Hero stats={liveData.heroStats} health={health} />
+      <DashboardMetrics metrics={liveData.metricCards} />
+      <ArchitectureStrip />
+      <ThreatAnalysis
+        attackDistribution={liveData.attackDistribution}
+        attacksPerDay={liveData.attacksPerDay}
+        threatActivity={liveData.threatActivity}
+        trafficComparison={liveData.trafficComparison}
+      />
+      <ModelPerformance metrics={liveData.modelMetrics} health={health} />
+      <LiveThreatFeed rows={liveData.liveThreats} />
+      <Reports liveData={liveData} events={events} health={health} />
+      <WhyItMatters />
+      <AboutProject />
+      <Footer />
     </main>
   );
 }
 
-function Navbar({ lightMode, onToggleMode }) {
+function Navbar() {
   return (
-    <nav className="sticky top-0 z-40 border-b border-white/10 bg-slate-950/70 backdrop-blur-2xl">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 sm:px-8 lg:px-10">
+    <nav className="sticky top-0 z-40 border-b border-white/50 bg-white/55 backdrop-blur-xl">
+      <div className="section-shell flex items-center justify-between gap-4 py-4">
         <a href="#dashboard" className="flex items-center gap-3">
-          <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-500 to-amber-300 text-slate-950 shadow-lg shadow-orange-500/25">
-            <Shield size={22} />
+          <span className="brand-mark">
+            <Shield size={20} />
           </span>
           <div>
-            <p className="text-sm font-bold text-white">Sentinel NetShield</p>
-            <p className="text-xs text-slate-400">Intrusion Detection using ML</p>
+            <p className="text-sm font-extrabold text-slate-900">Sentinel NetShield</p>
+            <p className="text-xs font-medium text-slate-500">Futuristic IDS Evaluation Console</p>
           </div>
         </a>
 
-        <div className="hidden items-center gap-6 rounded-full border border-white/10 bg-white/[0.04] px-5 py-3 text-sm text-slate-300 lg:flex">
+        <div className="hidden items-center gap-2 rounded-full border border-white/65 bg-white/60 px-3 py-2 shadow-[0_10px_40px_rgba(59,130,246,0.08)] lg:flex">
           {navItems.map((item) => (
-            <a key={item} className="transition hover:text-orange-200" href={`#${item.toLowerCase().replaceAll(' ', '-')}`}>
+            <a
+              key={item}
+              className="rounded-full px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-white hover:text-blue-600"
+              href={`#${item.toLowerCase().replaceAll(' ', '-')}`}
+            >
               {item}
             </a>
           ))}
         </div>
 
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={onToggleMode}
-            className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/[0.06] text-slate-100 transition hover:border-orange-300/40 hover:text-orange-200"
-            aria-label="Toggle color mode"
-          >
-            {lightMode ? <Sun size={18} /> : <Moon size={18} />}
-          </button>
-          <button className="hidden h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/[0.06] text-slate-100 sm:flex" type="button">
-            <UserCircle size={22} />
-          </button>
-        </div>
+        <a href="#reports" className="button-liquid hidden sm:inline-flex">
+          <span>Export Review Assets</span>
+        </a>
       </div>
     </nav>
   );
 }
 
 function Hero({ stats, health }) {
-  const apiLabel = health?.fallback_mode ? 'Browser fallback scorer active' : `Live scorer: ${health?.model_version || 'loading'}`;
+  const apiLabel = health?.fallback_mode ? 'Heuristic fallback scorer active' : `Live model: ${health?.model_version || 'loading'}`;
 
   return (
-    <section id="dashboard" className="section-shell grid min-h-[620px] items-center gap-10 pt-12 lg:grid-cols-[1.05fr_0.95fr]">
-      <motion.div initial="hidden" animate="visible" variants={fadeUp} transition={{ duration: 0.6 }}>
-        <p className="eyebrow">AI-Powered Intrusion Detection Dashboard</p>
-        <h1 className="mt-6 max-w-3xl text-5xl font-black tracking-[-0.06em] text-white sm:text-6xl lg:text-7xl">
-          Sentinel NetShield
+    <section id="dashboard" className="section-shell grid gap-8 pt-8 pb-4 lg:grid-cols-[1.08fr_0.92fr] lg:items-center">
+      <motion.div initial="hidden" animate="visible" variants={fadeUp} transition={{ duration: 0.55 }}>
+        <div className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-white/75 px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] text-blue-600">
+          <Sparkles size={14} />
+          Academic Evaluation Ready
+        </div>
+        <h1 className="mt-6 max-w-4xl text-4xl font-black leading-[0.95] tracking-[-0.05em] text-slate-950 sm:text-5xl lg:text-7xl">
+          A bright, glassmorphism dashboard for explaining
+          <span className="bg-gradient-to-r from-blue-500 to-cyan-500 bg-clip-text text-transparent"> machine-learning intrusion detection</span>
         </h1>
-        <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300">
-          A machine learning-based intrusion detection system that identifies suspicious network activity,
-          classifies attacks in real time, and helps analysts respond faster.
+        <p className="mt-6 max-w-2xl text-base leading-8 text-slate-600 sm:text-lg">
+          Sentinel NetShield converts live network behavior into charts, evaluator notes, model metrics, and actionable alerts.
+          Every block is designed to explain the technical logic behind the UI, not just display numbers.
         </p>
-        <p className="mt-4 inline-flex rounded-full border border-emerald-300/20 bg-emerald-400/10 px-4 py-2 text-sm font-semibold text-emerald-100">
-          {apiLabel}
-        </p>
+        <div className="mt-5 flex flex-wrap gap-3">
+          <span className="status-chip status-chip-blue">{apiLabel}</span>
+          <span className="status-chip">Student ID: 24BAI70387</span>
+          <span className="status-chip">Theme: Cloud White + Electric Blue</span>
+        </div>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <a className="primary-button" href="#dashboard-metrics">
-            View Dashboard <ChevronRight size={18} />
+          <a className="button-liquid" href="#dashboard-metrics">
+            <span>Inspect Live Dashboard</span>
+            <ChevronRight size={18} />
           </a>
-          <a className="secondary-button" href="#about">
-            Learn More
+          <a className="button-secondary" href="#about">
+            <span>Review Architecture</span>
+            <BookOpenText size={18} />
           </a>
         </div>
         <div className="mt-8 grid gap-3 sm:grid-cols-3">
-          {projectFacts.map((fact) => (
-            <div key={fact.label} className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-              <p className="text-xs uppercase tracking-[0.18em] text-slate-500">{fact.label}</p>
-              <p className="mt-2 text-sm font-semibold text-slate-100">{fact.value}</p>
-            </div>
+          {stats.map((stat) => (
+            <motion.div
+              key={stat.label}
+              className="glass-panel p-5"
+              whileHover={{ y: -6 }}
+              transition={{ type: 'spring', stiffness: 240, damping: 20 }}
+            >
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">{stat.label}</p>
+              <p className="mt-3 text-3xl font-black tracking-tight text-slate-950">{stat.value}</p>
+              <p className="mt-1 text-sm text-slate-500">{stat.subtext}</p>
+            </motion.div>
           ))}
         </div>
       </motion.div>
 
       <motion.div
-        className="relative min-h-[520px]"
-        initial={{ opacity: 0, scale: 0.94 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.7, delay: 0.1 }}
+        className="hero-stack"
+        initial={{ opacity: 0, y: 20, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.65, delay: 0.1 }}
       >
-        <div className="absolute inset-10 rounded-full bg-orange-500/20 blur-3xl" />
-        <div className="glass-card relative flex min-h-[500px] items-center justify-center overflow-hidden p-6">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(251,146,60,0.2),transparent_36%)]" />
-          <div className="relative flex h-52 w-52 items-center justify-center rounded-full border border-orange-300/20 bg-slate-950/70 shadow-2xl shadow-orange-500/20">
-            <div className="absolute h-72 w-72 rounded-full border border-dashed border-orange-300/20" />
-            <div className="absolute h-96 w-96 rounded-full border border-dashed border-amber-300/10" />
-            <Shield className="text-orange-200" size={72} />
-          </div>
-          {heroIllustrationNodes.map(({ label, icon: Icon, position }) => (
-            <motion.div
-              key={label}
-              className={`absolute ${position} rounded-2xl border border-white/10 bg-slate-950/80 px-4 py-3 shadow-xl backdrop-blur-xl`}
-              animate={{ y: [0, -8, 0] }}
-              transition={{ duration: 4, repeat: Infinity, delay: label.length * 0.05 }}
-            >
-              <div className="flex items-center gap-2 text-sm font-semibold text-slate-100">
-                <Icon size={16} className="text-orange-200" /> {label}
-              </div>
-            </motion.div>
-          ))}
-        </div>
-        <div className="relative -mt-12 grid gap-3 sm:grid-cols-3">
-          {stats.map((stat) => (
-            <div key={stat.label} className="glass-card p-4 text-center">
-              <p className="text-2xl font-black text-white">{stat.value}</p>
-              <p className="mt-1 text-xs font-semibold text-orange-100">{stat.label}</p>
-              <p className="text-xs text-slate-400">{stat.subtext}</p>
+        <div className="glass-panel hero-card">
+          <div className="hero-orb" />
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="text-sm font-bold uppercase tracking-[0.18em] text-blue-600">Interactive Onboarding</p>
+              <h2 className="mt-3 text-2xl font-extrabold tracking-tight text-slate-950">Project launch card for the evaluator</h2>
             </div>
-          ))}
+            <InfoBadge text="Logic: The hero condenses purpose, stack, and authorship into one onboarding surface so an evaluator understands the project before diving into metrics." />
+          </div>
+          <div className="mt-6 space-y-4">
+            {evaluatorHighlights.map(({ icon: Icon, title, value, detail }) => (
+              <div key={title} className="info-row">
+                <div className="info-row-icon">
+                  <Icon size={18} />
+                </div>
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-400">{title}</p>
+                  <p className="mt-1 text-sm font-extrabold text-slate-900">{value}</p>
+                  <p className="mt-1 text-sm leading-6 text-slate-500">{detail}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="mt-6 rounded-[28px] border border-white/70 bg-white/70 p-4">
+            <div className="grid gap-3 sm:grid-cols-3">
+              {systemStages.map((stage, index) => (
+                <motion.div
+                  key={stage.title}
+                  className="rounded-[24px] border border-slate-100 bg-[linear-gradient(180deg,rgba(255,255,255,0.95),rgba(241,245,249,0.8))] p-4"
+                  animate={{ y: [0, -4, 0] }}
+                  transition={{ duration: 4 + index, repeat: Infinity, ease: 'easeInOut' }}
+                  title={stage.logic}
+                >
+                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-500">{stage.title}</p>
+                  <p className="mt-2 text-sm font-semibold text-slate-800">{stage.subtitle}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
         </div>
       </motion.div>
     </section>
@@ -238,17 +315,81 @@ function Hero({ stats, health }) {
 }
 
 function DashboardMetrics({ metrics }) {
+  const logicNotes = [
+    'Logic: Counts every scored event visible in the rolling live stream.',
+    'Logic: Flags only traffic whose score passes the intrusion threshold.',
+    'Logic: Safe traffic percentage helps the evaluator compare signal vs noise.',
+    'Logic: High and critical items are surfaced as active review alerts.',
+    'Logic: Accuracy comes from backend model metadata when available.',
+    'Logic: Threat level is derived from the average confidence of recent events.'
+  ];
+
   return (
     <section id="dashboard-metrics" className="section-shell">
       <SectionHeader
         eyebrow="Dashboard"
-        title="Simple Security Snapshot"
-        description="Evaluator-friendly metrics that show what the system monitors, how much traffic is safe, and whether active alerts need attention."
+        title="Clear executive metrics with built-in technical context"
+        description="Each card is tuned for viva or demo review: polished enough for presentation, but annotated so the evaluator can understand how each number is computed."
+        info="Logic: This strip summarizes live event volume, intrusion filtering, current alert pressure, and model confidence in one glance."
       />
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {metrics.map((card) => (
-          <MetricCard key={card.label} {...card} />
+      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+        {metrics.map((card, index) => (
+          <MetricCard key={card.label} {...card} info={logicNotes[index]} />
         ))}
+      </div>
+    </section>
+  );
+}
+
+function ArchitectureStrip() {
+  return (
+    <section className="section-shell">
+      <div className="grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
+        <article className="glass-panel p-6 sm:p-7">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="section-kicker">System Narrative</p>
+              <h3 className="mt-3 text-2xl font-extrabold tracking-tight text-slate-950">From raw packets to evaluator-ready evidence</h3>
+            </div>
+            <InfoBadge text="Logic: This block converts the backend pipeline into a simple three-stage visual explanation." />
+          </div>
+          <div className="mt-6 space-y-4">
+            {[
+              { icon: Radar, title: 'Traffic intake', body: 'Incoming network events are formed into packet, byte, session, and authentication features.' },
+              { icon: BrainCircuit, title: 'Risk inference', body: 'The scorer returns a probability, a risk level, and a threat category for downstream decision support.' },
+              { icon: BellRing, title: 'Analyst action', body: 'High-severity results feed alerts, tables, exports, and evaluation materials.' }
+            ].map(({ icon: Icon, title, body }) => (
+              <div key={title} className="step-card">
+                <div className="step-icon"><Icon size={18} /></div>
+                <div>
+                  <p className="text-sm font-bold text-slate-900">{title}</p>
+                  <p className="mt-1 text-sm leading-6 text-slate-500">{body}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </article>
+        <article className="glass-panel p-6 sm:p-7">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="section-kicker">Evaluator Notes</p>
+              <h3 className="mt-3 text-2xl font-extrabold tracking-tight text-slate-950">Why the interface is intentionally explanatory</h3>
+            </div>
+            <InfoBadge text="Logic: The redesign prioritizes clarity, traceability, and academic storytelling over generic dashboard chrome." />
+          </div>
+          <div className="mt-6 grid gap-4 sm:grid-cols-2">
+            {[
+              'Info badges explain technical logic on hover.',
+              'Glass panels create hierarchy without heavy dark UI.',
+              'Color gradients emphasize actions while preserving light mode.',
+              'Responsive spacing keeps desktop presentation clean and mobile usable.'
+            ].map((note) => (
+              <div key={note} className="rounded-[26px] border border-white/65 bg-white/70 p-4 text-sm font-medium leading-6 text-slate-600">
+                {note}
+              </div>
+            ))}
+          </div>
+        </article>
       </div>
     </section>
   );
@@ -259,51 +400,74 @@ function ThreatAnalysis({ attackDistribution, attacksPerDay, threatActivity, tra
     <section id="threat-analysis" className="section-shell">
       <SectionHeader
         eyebrow="Threat Analysis"
-        title="Attack Patterns Made Easy To Understand"
-        description="These charts explain what threats were seen, when they happened, and how safe traffic compares with malicious activity."
+        title="Futuristic visual analytics for attack behavior"
+        description="These charts use a bright presentation style, but they still expose the underlying logic: what traffic was normal, when suspicious activity clustered, and how malicious flows compare with safe traffic."
+        info="Logic: Distribution, frequency, intensity, and safe-vs-malicious comparisons work together to explain attack patterns from multiple angles."
       />
       <div className="grid gap-5 lg:grid-cols-2">
-        <ChartCard title="Attack Type Distribution" subtitle="Normal traffic remains the majority, with a smaller share of attack classes.">
+        <ChartCard
+          title="Attack Type Distribution"
+          subtitle="Class mix across normal and suspicious flows."
+          info="Logic: This pie chart aggregates recent scored events by final threat category so the evaluator can see class balance."
+        >
           <ResponsiveContainer>
             <PieChart>
-              <Pie data={attackDistribution} dataKey="value" nameKey="name" innerRadius={62} outerRadius={96} paddingAngle={3}>
+              <Pie data={attackDistribution} dataKey="value" nameKey="name" innerRadius={60} outerRadius={92} paddingAngle={4}>
                 {attackDistribution.map((entry, index) => <Cell key={entry.name} fill={chartColors[index % chartColors.length]} />)}
               </Pie>
               <Tooltip contentStyle={tooltipStyle} />
             </PieChart>
           </ResponsiveContainer>
         </ChartCard>
-        <ChartCard title="Attacks Detected Per Day" subtitle="Daily attack volume for quick trend review.">
+        <ChartCard
+          title="Attacks Detected Per Interval"
+          subtitle="Quick frequency snapshot of suspicious detections."
+          info="Logic: Each bar counts only intrusion-flagged events within the recent timeline buckets."
+        >
           <ResponsiveContainer>
             <BarChart data={attacksPerDay}>
               <CartesianGrid stroke={chartTheme.grid} vertical={false} />
               <XAxis dataKey="day" stroke={chartTheme.text} />
               <YAxis stroke={chartTheme.text} />
               <Tooltip contentStyle={tooltipStyle} />
-              <Bar dataKey="attacks" fill={chartTheme.orange} radius={[12, 12, 0, 0]} />
+              <Bar dataKey="attacks" fill="url(#barBlue)" radius={[12, 12, 0, 0]} />
+              <defs>
+                <linearGradient id="barBlue" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stopColor="#3B82F6" />
+                  <stop offset="100%" stopColor="#0F5AA8" />
+                </linearGradient>
+              </defs>
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
-        <ChartCard title="Threat Activity Over Time" subtitle="Threat index stays in a manageable medium-risk range.">
+        <ChartCard
+          title="Threat Intensity Over Time"
+          subtitle="Average confidence trend across recent scored events."
+          info="Logic: This line shows the recent mean risk score, helping explain whether the stream is calming down or escalating."
+        >
           <ResponsiveContainer>
             <LineChart data={threatActivity}>
               <CartesianGrid stroke={chartTheme.grid} vertical={false} />
               <XAxis dataKey="time" stroke={chartTheme.text} />
               <YAxis stroke={chartTheme.text} />
               <Tooltip contentStyle={tooltipStyle} />
-              <Line type="monotone" dataKey="score" stroke={chartTheme.amber} strokeWidth={3} dot={{ r: 4 }} />
+              <Line type="monotone" dataKey="score" stroke="#38BDF8" strokeWidth={3.5} dot={{ r: 4, fill: '#3B82F6' }} />
             </LineChart>
           </ResponsiveContainer>
         </ChartCard>
-        <ChartCard title="Safe vs Malicious Traffic" subtitle="Designed to help analysts compare healthy traffic against suspicious activity.">
+        <ChartCard
+          title="Safe vs Malicious Traffic"
+          subtitle="Parallel view of healthy and suspicious network activity."
+          info="Logic: The area chart separates safe flows from malicious ones so the evaluator can judge signal quality and operational load."
+        >
           <ResponsiveContainer>
             <AreaChart data={trafficComparison}>
               <CartesianGrid stroke={chartTheme.grid} vertical={false} />
               <XAxis dataKey="time" stroke={chartTheme.text} />
               <YAxis stroke={chartTheme.text} />
               <Tooltip contentStyle={tooltipStyle} />
-              <Area type="monotone" dataKey="safe" stackId="1" stroke={chartTheme.green} fill="rgba(34,197,94,0.35)" />
-              <Area type="monotone" dataKey="malicious" stackId="1" stroke={chartTheme.red} fill="rgba(239,68,68,0.35)" />
+              <Area type="monotone" dataKey="safe" stackId="1" stroke="#14B8A6" fill="rgba(20,184,166,0.28)" />
+              <Area type="monotone" dataKey="malicious" stackId="1" stroke="#3B82F6" fill="rgba(59,130,246,0.22)" />
             </AreaChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -318,87 +482,122 @@ function ModelPerformance({ metrics, health }) {
   return (
     <section id="model-performance" className="section-shell">
       <SectionHeader
-        eyebrow="Machine Learning Performance"
-        title="Model Quality Without Confusing Jargon"
-        description={`The UI reads available model metadata from the backend health endpoint. Current scorer mode: ${health?.fallback_mode ? 'heuristic fallback/demo scoring' : 'trained model scoring'}.`}
+        eyebrow="Model Performance"
+        title="Readable ML validation without sacrificing rigor"
+        description={`Current scorer mode: ${health?.fallback_mode ? 'heuristic fallback/demo scoring' : 'trained model scoring'}. This section focuses on what makes the model trustworthy for academic review.`}
+        info="Logic: Accuracy, ROC behavior, precision-recall balance, confusion cells, and feature impact work together to justify the model's decisions."
       />
-      <div className="mb-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="mb-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
         {metrics.map((metric) => (
-          <div key={metric.label} className="glass-card p-5 text-center">
-            <p className="text-sm text-slate-400">{metric.label}</p>
-            <p className="mt-2 text-3xl font-black text-white">{metric.value}</p>
+          <div key={metric.label} className="glass-panel p-5 text-center">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">{metric.label}</p>
+            <p className="mt-3 text-3xl font-black tracking-tight text-slate-950">{metric.value}</p>
           </div>
         ))}
       </div>
       <div className="grid gap-5 lg:grid-cols-2">
-        <ChartCard title="ROC Curve" subtitle={`AUC: ${aucLabel}. Higher curve means stronger separation between safe and malicious traffic.`}>
+        <ChartCard
+          title="ROC Curve"
+          subtitle={`AUC: ${aucLabel}. Higher curvature means cleaner class separation.`}
+          info="Logic: ROC compares true-positive recovery against false-positive cost across thresholds."
+        >
           <ResponsiveContainer>
             <LineChart data={rocCurve}>
               <CartesianGrid stroke={chartTheme.grid} />
               <XAxis dataKey="fpr" stroke={chartTheme.text} label={{ value: 'False Positive Rate', position: 'insideBottom', fill: chartTheme.text }} />
               <YAxis stroke={chartTheme.text} />
               <Tooltip contentStyle={tooltipStyle} />
-              <Line type="monotone" dataKey="tpr" stroke={chartTheme.orange} strokeWidth={3} dot={{ r: 4 }} />
+              <Line type="monotone" dataKey="tpr" stroke="#3B82F6" strokeWidth={3.5} dot={{ r: 4, fill: '#0EA5E9' }} />
             </LineChart>
           </ResponsiveContainer>
         </ChartCard>
-        <ChartCard title="Precision vs Recall" subtitle="Shows the model balances catching threats and controlling false positives.">
+        <ChartCard
+          title="Precision vs Recall"
+          subtitle="Shows whether strong detection comes with controlled false alarms."
+          info="Logic: Precision-recall is especially valuable in intrusion detection because suspicious classes can be imbalanced."
+        >
           <ResponsiveContainer>
             <LineChart data={precisionRecall}>
               <CartesianGrid stroke={chartTheme.grid} />
               <XAxis dataKey="recall" stroke={chartTheme.text} />
               <YAxis dataKey="precision" stroke={chartTheme.text} />
               <Tooltip contentStyle={tooltipStyle} />
-              <Line type="monotone" dataKey="precision" stroke={chartTheme.amber} strokeWidth={3} dot={{ r: 4 }} />
+              <Line type="monotone" dataKey="precision" stroke="#0EA5E9" strokeWidth={3.5} dot={{ r: 4, fill: '#3B82F6' }} />
             </LineChart>
           </ResponsiveContainer>
         </ChartCard>
-        <ChartCard title="Accuracy Comparison" subtitle="Compares common ML classifiers used for intrusion detection experiments.">
+        <ChartCard
+          title="Classifier Accuracy Comparison"
+          subtitle="Benchmark perspective across common candidate models."
+          info="Logic: This panel compares competing ML approaches used in intrusion detection experiments."
+        >
           <ResponsiveContainer>
             <BarChart data={accuracyComparison} layout="vertical" margin={{ left: 28 }}>
               <CartesianGrid stroke={chartTheme.grid} horizontal={false} />
               <XAxis type="number" domain={[85, 100]} stroke={chartTheme.text} />
               <YAxis type="category" dataKey="model" width={130} stroke={chartTheme.text} />
               <Tooltip contentStyle={tooltipStyle} />
-              <Bar dataKey="accuracy" fill={chartTheme.orange} radius={[0, 12, 12, 0]} />
+              <Bar dataKey="accuracy" fill="url(#accuracyFill)" radius={[0, 12, 12, 0]} />
+              <defs>
+                <linearGradient id="accuracyFill" x1="0" x2="1" y1="0" y2="0">
+                  <stop offset="0%" stopColor="#7DD3FC" />
+                  <stop offset="100%" stopColor="#3B82F6" />
+                </linearGradient>
+              </defs>
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
-        <ChartCard title="SHAP Feature Importance" subtitle="Global explanation view: higher bars show which traffic features most influence intrusion decisions.">
+        <ChartCard
+          title="SHAP Feature Importance"
+          subtitle="Global view of the most influential network features."
+          info="Logic: Larger bars mean those attributes contribute more strongly to the intrusion decision boundary."
+        >
           <ResponsiveContainer>
             <BarChart data={shapFeatureImportance} layout="vertical" margin={{ left: 32 }}>
               <CartesianGrid stroke={chartTheme.grid} horizontal={false} />
               <XAxis type="number" stroke={chartTheme.text} />
               <YAxis type="category" dataKey="feature" width={140} stroke={chartTheme.text} />
               <Tooltip contentStyle={tooltipStyle} formatter={(value) => [`${Number(value).toFixed(2)}`, 'Mean |SHAP value|']} />
-              <Bar dataKey="importance" fill={chartTheme.amber} radius={[0, 12, 12, 0]} />
+              <Bar dataKey="importance" fill="url(#shapFill)" radius={[0, 12, 12, 0]} />
+              <defs>
+                <linearGradient id="shapFill" x1="0" x2="1" y1="0" y2="0">
+                  <stop offset="0%" stopColor="#38BDF8" />
+                  <stop offset="100%" stopColor="#2563EB" />
+                </linearGradient>
+              </defs>
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
-        <article className="glass-card p-5">
-          <h3 className="text-lg font-bold text-white">Confusion Matrix Heatmap</h3>
-          <p className="mt-1 text-sm text-slate-400">Clear view of correct classifications and errors.</p>
+        <article className="glass-panel p-5">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h3 className="text-lg font-extrabold text-slate-950">Confusion Matrix Heatmap</h3>
+              <p className="mt-1 text-sm text-slate-500">Correct classifications and model mistakes in one compact view.</p>
+            </div>
+            <InfoBadge text="Logic: A strong evaluator view needs both success counts and error counts, not only a single accuracy number." />
+          </div>
           <div className="mt-6 grid grid-cols-2 gap-4">
             {confusionMatrix.map((cell) => (
-              <div key={cell.label} className={`rounded-3xl border border-white/10 bg-gradient-to-br ${cell.tone} p-6 text-center`}>
-                <p className="text-3xl font-black text-white">{cell.value}</p>
-                <p className="mt-2 text-sm text-slate-200">{cell.label}</p>
+              <div key={cell.label} className={`rounded-[28px] border border-white/65 bg-gradient-to-br ${cell.tone} p-6 text-center`}>
+                <p className="text-3xl font-black text-slate-950">{cell.value}</p>
+                <p className="mt-2 text-sm font-semibold text-slate-700">{cell.label}</p>
               </div>
             ))}
           </div>
         </article>
-        <article className="glass-card p-5">
-          <h3 className="text-lg font-bold text-white">How To Explain SHAP</h3>
-          <p className="mt-2 text-sm leading-6 text-slate-300">
-            SHAP helps explain the model by showing which input features pushed predictions toward suspicious or safe.
-            In this dashboard, packet rate, failed logins, byte ratio, sensitive destination ports, and unusual flags
-            are the strongest global indicators for intrusion detection.
-          </p>
+        <article className="glass-panel p-5">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h3 className="text-lg font-extrabold text-slate-950">Feature Interpretation Notes</h3>
+              <p className="mt-1 text-sm text-slate-500">Concise explanations for the most influential signals.</p>
+            </div>
+            <InfoBadge text="Logic: These annotations translate model-explanation terminology into simpler academic language for the evaluator." />
+          </div>
           <div className="mt-5 space-y-3">
             {shapFeatureImportance.slice(0, 4).map((item) => (
-              <div key={item.feature} className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-                <p className="text-sm font-bold text-orange-100">{item.feature}</p>
-                <p className="mt-1 text-xs leading-5 text-slate-400">{item.explanation}</p>
+              <div key={item.feature} className="rounded-[24px] border border-white/65 bg-white/70 p-4">
+                <p className="text-sm font-bold text-slate-900">{item.feature}</p>
+                <p className="mt-1 text-xs leading-5 text-slate-500">{item.explanation}</p>
               </div>
             ))}
           </div>
@@ -419,17 +618,24 @@ function Reports({ liveData, events, health }) {
     <section id="reports" className="section-shell">
       <SectionHeader
         eyebrow="Reports"
-        title="Downloadable Outputs For Evaluation"
-        description="These buttons export the current live dashboard data, including scored events, model status, alert counts, and graph summaries."
+        title="High-fidelity outputs for evaluation and documentation"
+        description="Primary actions use custom gradient buttons and glass cards so exports feel like part of the product, not an afterthought."
+        info="Logic: These exports package the current dashboard state into evidence that can be attached to reports, demos, or viva discussions."
       />
       <div className="grid gap-5 md:grid-cols-3">
         {reports.map(({ title, description, icon: Icon }) => (
-          <article key={title} className="glass-card p-6">
-            <div className="metric-icon"><Icon size={22} /></div>
-            <h3 className="mt-6 text-xl font-bold text-white">{title}</h3>
-            <p className="mt-3 text-sm leading-6 text-slate-300">{description}</p>
-            <button className="secondary-button mt-6 w-full" type="button" onClick={reportActions[title]}>
-              Download
+          <article key={title} className="glass-panel p-6">
+            <div className="flex items-start justify-between gap-4">
+              <div className="metric-icon">
+                <Icon size={22} />
+              </div>
+              <InfoBadge text={`Logic: ${description}`} />
+            </div>
+            <h3 className="mt-6 text-xl font-extrabold text-slate-950">{title}</h3>
+            <p className="mt-3 text-sm leading-6 text-slate-500">{description}</p>
+            <button className="button-liquid mt-6 w-full justify-center" type="button" onClick={reportActions[title]}>
+              <span>Generate Export</span>
+              <ArrowRight size={18} />
             </button>
           </article>
         ))}
@@ -442,16 +648,20 @@ function WhyItMatters() {
   return (
     <section className="section-shell">
       <SectionHeader
-        eyebrow="Why This Project Matters"
-        title="Business Value For Non-Technical Evaluators"
-        description="This section explains the impact of the project beyond algorithms and code."
+        eyebrow="Why It Matters"
+        title="A security dashboard that tells the academic story clearly"
+        description="This section translates technical capability into evaluator-focused value: faster review, better transparency, and stronger evidence of engineering maturity."
+        info="Logic: The cards below connect operational outcomes to the underlying ML and alerting pipeline."
       />
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-5">
         {valueCards.map(({ title, description, icon: Icon }) => (
-          <article key={title} className="glass-card p-5">
-            <div className="metric-icon"><Icon size={22} /></div>
-            <h3 className="mt-5 text-lg font-bold text-white">{title}</h3>
-            <p className="mt-3 text-sm leading-6 text-slate-300">{description}</p>
+          <article key={title} className="glass-panel p-5">
+            <div className="flex items-start justify-between gap-4">
+              <div className="metric-icon"><Icon size={22} /></div>
+              <InfoBadge text={`Logic: ${description}`} />
+            </div>
+            <h3 className="mt-5 text-lg font-extrabold text-slate-950">{title}</h3>
+            <p className="mt-3 text-sm leading-6 text-slate-500">{description}</p>
           </article>
         ))}
       </div>
@@ -462,27 +672,35 @@ function WhyItMatters() {
 function AboutProject() {
   return (
     <section id="about" className="section-shell">
-      <div className="glass-card grid gap-8 p-6 sm:p-8 lg:grid-cols-[0.9fr_1.1fr]">
+      <div className="glass-panel grid gap-8 p-6 sm:p-8 lg:grid-cols-[0.92fr_1.08fr]">
         <div>
-          <p className="eyebrow">About</p>
-          <h2 className="mt-4 text-3xl font-bold text-white">Intrusion Detection in Network Traffic using ML</h2>
-          <p className="mt-5 text-sm leading-7 text-slate-300">
-            The problem is that modern networks produce large volumes of traffic, and manual monitoring can miss
-            suspicious behaviour. The objective is to improve detection rate while controlling false positives,
-            handle class imbalance, and provide a scoring pipeline with logs, alerts, and a dashboard for analysts.
+          <div className="flex items-center gap-3">
+            <p className="section-kicker">About</p>
+            <InfoBadge text="Logic: This module summarizes the project problem statement, deployment context, and tech choices for a quick academic review." />
+          </div>
+          <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-slate-950">Intrusion detection in network traffic using machine learning</h2>
+          <p className="mt-5 text-sm leading-7 text-slate-600">
+            Modern networks generate large traffic volumes, and manual inspection can miss suspicious behavior. This project
+            aims to improve detection quality while controlling false positives, then present those results in a reviewer-friendly
+            interface with live scoring, alert queues, metrics, and downloadable evidence.
           </p>
-          <p className="mt-4 text-sm leading-7 text-slate-300">
-            Real-world applications include SOC monitoring, enterprise network protection, student lab security,
-            cloud traffic review, and early warning dashboards for suspicious login or attack behaviour.
+          <p className="mt-4 text-sm leading-7 text-slate-600">
+            The redesign is intentionally light, technical, and explanatory so an evaluator can inspect the product quickly on desktop,
+            while still retaining mobile readability for demos or coursework submission review.
           </p>
         </div>
         <div className="grid gap-4 sm:grid-cols-3">
           {technologyGroups.map((group) => (
-            <div key={group.title} className="rounded-3xl border border-white/10 bg-slate-950/40 p-5">
-              <h3 className="text-base font-bold text-orange-100">{group.title}</h3>
+            <div key={group.title} className="rounded-[28px] border border-white/70 bg-white/70 p-5">
+              <div className="flex items-center justify-between gap-2">
+                <h3 className="text-base font-extrabold text-slate-900">{group.title}</h3>
+                <InfoBadge text={`Logic: This stack group covers the ${group.title.toLowerCase()} layer of the project.`} />
+              </div>
               <div className="mt-4 flex flex-wrap gap-2">
                 {group.items.map((item) => (
-                  <span key={item} className="rounded-full bg-white/[0.06] px-3 py-1 text-xs text-slate-300">{item}</span>
+                  <span key={item} className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-600">
+                    {item}
+                  </span>
                 ))}
               </div>
             </div>
@@ -495,12 +713,12 @@ function AboutProject() {
 
 function Footer() {
   return (
-    <footer className="border-t border-white/10">
-      <div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-8 text-sm text-slate-400 sm:px-8 md:flex-row md:items-center md:justify-between lg:px-10">
-        <p>Sentinel NetShield © 2026. AI-powered intrusion detection mini project.</p>
+    <footer className="border-t border-white/50">
+      <div className="section-shell flex flex-col gap-4 py-8 text-sm text-slate-500 md:flex-row md:items-center md:justify-between">
+        <p>Sentinel NetShield © 2026. Light-mode ML intrusion detection showcase for academic evaluation.</p>
         <div className="flex flex-wrap gap-3">
           {footerLinks.map(({ label, href, icon: Icon }) => (
-            <a key={label} href={href} className="inline-flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 transition hover:border-orange-300/40 hover:text-orange-100">
+            <a key={label} href={href} className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/70 px-4 py-2 font-semibold transition hover:-translate-y-0.5 hover:text-blue-600">
               <Icon size={16} /> {label}
             </a>
           ))}
@@ -510,11 +728,22 @@ function Footer() {
   );
 }
 
-const tooltipStyle = {
-  background: 'rgba(15, 23, 42, 0.94)',
-  border: '1px solid rgba(255,255,255,0.12)',
-  borderRadius: '16px',
-  color: '#f8fafc'
+function InfoBadge({ text }) {
+  return (
+    <span
+      className="info-badge"
+      title={text}
+      aria-label={text}
+    >
+      <BadgeInfo size={15} />
+      <span className="hidden sm:inline">Info</span>
+    </span>
+  );
+}
+
+const chartTheme = {
+  grid: 'rgba(100, 116, 139, 0.16)',
+  text: '#64748B'
 };
 
 function buildScoredEvent(payload, result) {
@@ -673,6 +902,7 @@ function downloadPdfReport(liveData, events, health) {
     ['Project', 'Sentinel NetShield'],
     ['Objective', 'Intrusion Detection in Network Traffic using ML'],
     ['Generated', generatedAt],
+    ['Student ID', '24BAI70387'],
     ['Scorer', health?.fallback_mode ? 'Heuristic fallback scorer' : `Trained model: ${health?.model_version || 'active'}`],
     ['Total Events', liveData.metricCards[0]?.value || '0'],
     ['Suspicious Activities', liveData.metricCards[1]?.value || '0'],
@@ -681,7 +911,7 @@ function downloadPdfReport(liveData, events, health) {
     ['Threat Level', liveData.metricCards[5]?.value || 'Starting']
   ];
 
-  doc.setFillColor(15, 23, 42);
+  doc.setFillColor(59, 130, 246);
   doc.rect(0, 0, 210, 34, 'F');
   doc.setTextColor(255, 255, 255);
   doc.setFont('helvetica', 'bold');
@@ -689,7 +919,7 @@ function downloadPdfReport(liveData, events, health) {
   doc.text('Sentinel NetShield Report', 14, 18);
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
-  doc.text('AI-Powered Intrusion Detection Dashboard', 14, 26);
+  doc.text('Futuristic light-mode IDS dashboard summary', 14, 26);
 
   doc.setTextColor(30, 41, 59);
   doc.setFont('helvetica', 'bold');
@@ -740,6 +970,7 @@ function downloadPdfReport(liveData, events, health) {
     doc.addPage();
     y = 20;
   }
+
   y += 4;
   doc.setFont('helvetica', 'bold');
   doc.text('SHAP Feature Importance', 14, y);
@@ -789,6 +1020,7 @@ function downloadCsvLogs(events) {
 function downloadThreatSummary(liveData, events, health) {
   const summary = {
     project: 'Sentinel NetShield',
+    student_id: '24BAI70387',
     generated_at: new Date().toISOString(),
     scorer: health?.fallback_mode ? 'heuristic fallback scorer' : health?.model_version,
     metrics: liveData.metricCards.map(({ label, value, trend }) => ({ label, value, trend })),

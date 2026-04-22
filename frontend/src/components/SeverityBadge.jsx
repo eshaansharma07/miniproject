@@ -6,5 +6,5 @@ const severityClass = {
 };
 
 export default function SeverityBadge({ level }) {
-  return <span className={`status-badge ${severityClass[level] || 'status-medium'}`}>{level}</span>;
+  return <span className={`status-badge ${severityClass[level] || 'status-medium'}`}>{String(level).replace('_', ' ')}</span>;
 }
