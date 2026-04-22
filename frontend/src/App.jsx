@@ -21,17 +21,13 @@ import {
   ArrowRight,
   BadgeInfo,
   BellRing,
-  Binary,
   BookOpenText,
   BrainCircuit,
-  CheckCircle2,
   ChevronRight,
   Cpu,
-  Gauge,
   Radar,
   Shield,
-  Sparkles,
-  Workflow
+  Sparkles
 } from 'lucide-react';
 import { generateSyntheticEvent, getAlerts, getHealth, scoreEvent } from './api';
 import ChartCard from './components/ChartCard';
@@ -70,12 +66,6 @@ const evaluatorHighlights = [
     title: 'Tech Stack',
     value: 'React, Recharts, Framer Motion, Python, Scikit-learn',
     detail: 'Frontend visualization is separated from the scoring API so the evaluator can inspect both system clarity and model performance.'
-  },
-  {
-    icon: Binary,
-    title: 'Student ID',
-    value: '24BAI70387',
-    detail: 'Pinned directly in the hero card for presentation and viva visibility.'
   }
 ];
 
@@ -234,7 +224,6 @@ function Hero({ stats, health }) {
         </p>
         <div className="mt-5 flex flex-wrap gap-3">
           <span className="status-chip status-chip-blue">{apiLabel}</span>
-          <span className="status-chip">Student ID: 24BAI70387</span>
           <span className="status-chip">Theme: Cloud White + Electric Blue</span>
         </div>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -247,12 +236,12 @@ function Hero({ stats, health }) {
             <BookOpenText size={18} />
           </a>
         </div>
-        <div className="mt-8 grid gap-3 sm:grid-cols-3">
+        <div className="mt-8 grid gap-4 md:grid-cols-3">
           {stats.map((stat) => (
             <motion.div
               key={stat.label}
               className="glass-panel p-5"
-              whileHover={{ y: -6 }}
+              whileHover={{ y: -2 }}
               transition={{ type: 'spring', stiffness: 240, damping: 20 }}
             >
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">{stat.label}</p>
@@ -292,8 +281,8 @@ function Hero({ stats, health }) {
               </div>
             ))}
           </div>
-          <div className="mt-6 rounded-[28px] border border-white/70 bg-white/70 p-4">
-            <div className="grid gap-3 sm:grid-cols-3">
+          <div className="mt-6 rounded-[28px] border border-white/70 bg-white/70 p-4 sm:p-5">
+            <div className="grid gap-4 lg:grid-cols-3">
               {systemStages.map((stage, index) => (
                 <motion.div
                   key={stage.title}
@@ -902,7 +891,6 @@ function downloadPdfReport(liveData, events, health) {
     ['Project', 'Sentinel NetShield'],
     ['Objective', 'Intrusion Detection in Network Traffic using ML'],
     ['Generated', generatedAt],
-    ['Student ID', '24BAI70387'],
     ['Scorer', health?.fallback_mode ? 'Heuristic fallback scorer' : `Trained model: ${health?.model_version || 'active'}`],
     ['Total Events', liveData.metricCards[0]?.value || '0'],
     ['Suspicious Activities', liveData.metricCards[1]?.value || '0'],
@@ -1020,7 +1008,6 @@ function downloadCsvLogs(events) {
 function downloadThreatSummary(liveData, events, health) {
   const summary = {
     project: 'Sentinel NetShield',
-    student_id: '24BAI70387',
     generated_at: new Date().toISOString(),
     scorer: health?.fallback_mode ? 'heuristic fallback scorer' : health?.model_version,
     metrics: liveData.metricCards.map(({ label, value, trend }) => ({ label, value, trend })),

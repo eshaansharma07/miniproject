@@ -5,7 +5,7 @@ export default function MetricCard({ label, value, trend, icon: Icon, info }) {
   return (
     <motion.article
       className="glass-panel p-5"
-      whileHover={{ y: -6, scale: 1.01 }}
+      whileHover={{ y: -2, scale: 1.003 }}
       transition={{ type: 'spring', stiffness: 260, damping: 22 }}
     >
       <div className="flex items-start justify-between gap-4">

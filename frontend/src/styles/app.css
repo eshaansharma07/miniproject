@@ -74,11 +74,10 @@
     box-shadow: var(--panel-glow);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    @apply rounded-[32px] transition duration-300;
+    @apply relative rounded-[32px] transition duration-300;
   }
 
   .glass-panel:hover {
-    transform: translateY(-4px);
     box-shadow: 0 30px 90px rgba(59, 130, 246, 0.18);
   }
 
@@ -153,6 +152,7 @@
   .hero-card {
     @apply relative overflow-hidden p-6 sm:p-7;
     min-height: 100%;
+    height: 100%;
   }
 
   .hero-orb {
@@ -167,7 +167,7 @@
   }
 
   .info-row {
-    @apply flex items-start gap-4 rounded-[24px] border border-white/75 bg-white/70 p-4;
+    @apply flex flex-col items-start gap-3 rounded-[24px] border border-white/75 bg-white/70 p-4 sm:flex-row sm:gap-4;
   }
 
   .info-row-icon {
