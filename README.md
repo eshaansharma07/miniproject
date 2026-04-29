@@ -27,6 +27,7 @@ cd backend
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
+export IDS_API_KEY=your-secret-key
 python train_model.py
 uvicorn app.main:app --reload --port 8000
 ```
@@ -35,6 +36,7 @@ uvicorn app.main:app --reload --port 8000
 ```bash
 cd frontend
 npm install
+echo "VITE_IDS_API_KEY=your-secret-key" > .env.local
 npm run dev
 ```
 
@@ -46,6 +48,17 @@ Backend API: `http://localhost:8000`
 - `POST /score`
 - `POST /score/batch`
 - `GET /alerts?limit=25`
+
+## API Key Protection
+
+Protected routes support either of these headers:
+- `x-api-key: <your-secret-key>`
+- `Authorization: Bearer <your-secret-key>`
+
+Behavior:
+- `GET /health` stays public so deployments can be checked easily
+- `POST /score`, `POST /score/batch`, and `GET /alerts` require the API key when `IDS_API_KEY` is set
+- if `IDS_API_KEY` is not set, the backend runs without auth for local demos
 
 ### Sample `/score` response
 ```json

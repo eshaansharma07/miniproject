@@ -1,5 +1,7 @@
 from datetime import datetime, timezone
-from fastapi import FastAPI
+import os
+import secrets
+from fastapi import Depends, FastAPI, Header, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 
 try:
@@ -17,6 +19,7 @@ except ModuleNotFoundError:
 app = FastAPI(title="IDS ML Scoring API", version="1.0.0")
 logger = setup_logger()
 model_service = ModelService()
+API_KEY = os.getenv("IDS_API_KEY", "").strip()
 
 app.add_middleware(
     CORSMiddleware,
@@ -24,6 +27,27 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+def require_api_key(
+    x_api_key: str | None = Header(default=None),
+    authorization: str | None = Header(default=None),
+) -> None:
+    if not API_KEY:
+        return
+
+    bearer_token = None
+    if authorization and authorization.lower().startswith("bearer "):
+        bearer_token = authorization.split(" ", 1)[1].strip()
+
+    provided_key = x_api_key or bearer_token
+    if provided_key and secrets.compare_digest(provided_key, API_KEY):
+        return
+
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Invalid or missing API key.",
+    )
 
 
 @app.on_event("startup")
@@ -45,11 +69,12 @@ def health() -> dict:
         "fallback_mode": model_service.fallback_mode,
         "threshold": model_service.threshold,
         "metrics": model_service.metrics,
+        "api_key_protected": bool(API_KEY),
     }
 
 
 @app.post("/score", response_model=ScoreResponse)
-def score(event: TrafficEvent) -> ScoreResponse:
+def score(event: TrafficEvent, _auth: None = Depends(require_api_key)) -> ScoreResponse:
     result = model_service.score_event(event.model_dump())
 
     logger.info(
@@ -78,7 +103,7 @@ def score(event: TrafficEvent) -> ScoreResponse:
 
 
 @app.post("/score/batch", response_model=BatchScoreResponse)
-def score_batch(events: list[TrafficEvent]) -> BatchScoreResponse:
+def score_batch(events: list[TrafficEvent], _auth: None = Depends(require_api_key)) -> BatchScoreResponse:
     scored = model_service.score_batch([item.model_dump() for item in events])
     intrusion_count = sum(1 for item in scored if item["is_intrusion"])
     average_score = round(sum(item["score"] for item in scored) / len(scored), 4) if scored else 0.0
@@ -97,7 +122,7 @@ def score_batch(events: list[TrafficEvent]) -> BatchScoreResponse:
 
 
 @app.get("/alerts")
-def alerts(limit: int = 25) -> dict:
+def alerts(limit: int = 25, _auth: None = Depends(require_api_key)) -> dict:
     return {"alerts": latest_alerts(limit=limit)}
 
 

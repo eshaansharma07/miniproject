@@ -1,5 +1,13 @@
 const API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:8000' : '/api');
 const ALERTS_KEY = 'sentinel_local_alerts';
+const API_KEY = import.meta.env.VITE_IDS_API_KEY || '';
+
+function buildHeaders(extra = {}) {
+  return {
+    ...extra,
+    ...(API_KEY ? { 'x-api-key': API_KEY } : {})
+  };
+}
 
 export const SCENARIOS = [
   {
@@ -49,7 +57,7 @@ export async function scoreEvent(payload) {
   try {
     const res = await fetch(`${API_BASE}/score`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: buildHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify(body)
     });
     if (!res.ok) throw new Error('Scoring failed');
@@ -65,7 +73,9 @@ export async function scoreEvent(payload) {
 
 export async function getAlerts(limit = 12) {
   try {
-    const res = await fetch(`${API_BASE}/alerts?limit=${limit}`);
+    const res = await fetch(`${API_BASE}/alerts?limit=${limit}`, {
+      headers: buildHeaders()
+    });
     if (!res.ok) throw new Error('Failed to load alerts');
     return res.json();
   } catch (_error) {
